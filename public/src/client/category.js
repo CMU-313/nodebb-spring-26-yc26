@@ -28,6 +28,11 @@ define('forum/category', [
 
 		sort.handleSort('categoryTopicSort', 'category/' + ajaxify.data.slug);
 
+		// Sort resolved topics to bottom for admins in comments-feedback category
+		if (cid === 4 && (app.user.isAdmin || app.user.isGlobalMod)) {
+			setTimeout(sortResolvedTopicsToBottom, 100);
+		}
+			
 		if (!config.usePagination) {
 			navigator.init('[component="category/topic"]', ajaxify.data.topic_count, Category.toTop, Category.toBottom);
 		} else {
@@ -149,6 +154,31 @@ define('forum/category', [
 			hooks.fire('action:topics.loaded', { topics: data.topics });
 			callback(data, done);
 		});
+	}
+
+	function sortResolvedTopicsToBottom() {
+		const $topicsList = $('[component="category"]');
+		const $topics = $topicsList.find('> [component="category/topic"]');
+
+		const unresolvedTopics = [];
+		const resolvedTopics = [];
+
+		$topics.each(function () {
+			const $topic = $(this);
+			const isResolved = $topic.attr('data-resolved') === 'true';
+
+			if (isResolved) {
+				resolvedTopics.push($topic);
+			} else {
+				unresolvedTopics.push($topic);
+			}
+		});
+
+		// Re-append: unresolved first, then resolved
+		unresolvedTopics.forEach($topic => $topicsList.append($topic));
+		resolvedTopics.forEach($topic => $topicsList.append($topic));
+
+		console.log('Sorted topics: ' + unresolvedTopics.length + ' unresolved, ' + resolvedTopics.length + ' resolved');
 	}
 
 	return Category;

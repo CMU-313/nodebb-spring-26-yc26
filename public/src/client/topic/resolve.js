@@ -9,6 +9,9 @@ define('forum/topic/resolve', [], function () {
 			return;
 		}
 
+		// Sort posts on page load (admins only)
+		sortPostsByResolvedState();
+
 		// Handle resolve button clicks
 		$('[component="topic"]').on('click', '[component="post/resolve"]', function (e) {
 			e.preventDefault();
@@ -21,6 +24,11 @@ define('forum/topic/resolve', [], function () {
 			// Update UI
 			updateButtonUI($btn, newState);
 			console.log('Toggled resolve state for post', pid, 'to', newState);
+
+			// Re-sort posts after toggle
+			setTimeout(() => {
+				sortPostsByResolvedState();
+			}, 100);
 		});
 	};
 
@@ -47,6 +55,47 @@ define('forum/topic/resolve', [], function () {
 			}
 			$btn.attr('title', 'Mark as Resolved');
 		}
+	}
+
+	function sortPostsByResolvedState() {
+		// Only sort for admins/moderators
+		if (!app.user.isAdmin && !app.user.isGlobalMod) {
+			console.log('Not admin/mod, skipping sort');
+			return;
+		}
+
+		console.log('Starting sort...');
+		const $postsContainer = $('[component="topic"]');
+		console.log('Posts container:', $postsContainer.length);
+		
+		const $posts = $postsContainer.find('> [component="post"]');
+		console.log('Found posts:', $posts.length);
+
+		// Separate resolved and unresolved posts
+		const unresolvedPosts = [];
+		const resolvedPosts = [];
+
+		$posts.each(function (index) {
+			const $post = $(this);
+			const $resolveBtn = $post.find('[component="post/resolve"]');
+			const isResolved = $resolveBtn.attr('data-resolved') === 'true';
+			
+			console.log('Post', index, '- has button:', $resolveBtn.length, ', resolved:', isResolved);
+
+			if ($resolveBtn.length && isResolved) {
+				resolvedPosts.push($post);
+			} else {
+				unresolvedPosts.push($post);
+			}
+		});
+
+		console.log('Unresolved:', unresolvedPosts.length, 'Resolved:', resolvedPosts.length);
+
+		// Re-append posts: unresolved first, then resolved
+		unresolvedPosts.forEach($post => $postsContainer.append($post));
+		resolvedPosts.forEach($post => $postsContainer.append($post));
+
+		console.log('Sorting complete!');
 	}
 
 	return Resolve;
