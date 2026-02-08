@@ -4,6 +4,16 @@
 		<span class="menu-icon"><i class="fa fa-fw text-secondary fa-pencil"></i></span> [[topic:edit]]
 	</a>
 </li>
+
+<li component="post/approve-answer-container" class="{{{ if posts.isOriginalPost }}}hidden{{{ end }}}">
+	<a class="dropdown-item rounded-1 d-flex align-items-center gap-2" component="post/approve-answer" role="menuitem" href="#" data-approved="{posts.approved}">
+		<span class="menu-icon">
+			<i component="post/approve-icon" class="fa fa-fw {{{ if posts.approved }}}fa-times-circle text-danger{{{ else }}}fa-check-circle text-secondary{{{ end }}}"></i>
+		</span>
+		<span component="post/approve-text">{{{ if posts.approved }}}Remove approval{{{ else }}}Approve answer{{{ end }}}</span>
+	</a>
+</li>
+
 {{{ if posts.display_delete_tools }}}
 <li {{{ if posts.deleted }}}hidden{{{ end }}}>
 	<a class="dropdown-item rounded-1 d-flex align-items-center gap-2" component="post/delete" role="menuitem" href="#" class="{{{ if posts.deleted }}}hidden{{{ end }}}">

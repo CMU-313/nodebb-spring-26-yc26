@@ -44,6 +44,15 @@
 					</div>
 
 					<a class="fw-bold text-nowrap text-truncate" href="{{{ if ./user.userslug }}}{config.relative_path}/user/{./user.userslug}{{{ else }}}#{{{ end }}}" data-username="{posts.user.username}" data-uid="{posts.user.uid}">{posts.user.displayname}</a>
+					
+					<!-- Supported by instructor badge -->
+					{{{ if (posts.approved && posts.index > 0 && cid == 4) }}}
+					<span class="badge bg-success text-white d-inline-flex align-items-center gap-1" title="This answer has been approved by an instructor">
+						<i class="fa fa-check-circle"></i>
+						<span class="d-none d-md-inline">Supported by instructor</span>
+					</span>
+					{{{ end }}}
+	
 				</div>
 
 				{{{ each posts.user.selectedGroups }}}

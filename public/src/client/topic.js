@@ -18,10 +18,12 @@ define('forum/topic', [
 	'bootbox',
 	'clipboard',
 	'forum/topic/resolve',
+	'forum/topic/approve',
 ], function (
 	infinitescroll, threadTools, postTools,
 	events, posts, navigator, sort, quickreply,
-	components, storage, hooks, api, alerts, bootbox, clipboard, Resolve
+	components, storage, hooks, api, alerts, bootbox, 
+	clipboard, Resolve, Approve
 ) {
 	const Topic = {};
 	let tid = '0';
@@ -70,6 +72,7 @@ define('forum/topic', [
 		handleBookmark(tid);
 		handleThumbs();
 		Resolve.init();
+		Approve.init();
 		addCrosspostsHandler();
 
 		$(window).on('scroll', utils.debounce(updateTopicTitle, 250));
