@@ -19,23 +19,23 @@ plugin.setTopicDefault = async function (data) {
 
 /**
  * Task 2: Organize questions in “resolved” and “unresolved” lists
- * We define a Socket method so the Frontend can call it later to toggle status.
+ * Used a Socket method so the Frontend can call it later to toggle status.
  */
 plugin.init = async function (params) {
-    // We register the function directly on the imported object
+    // Register the function directly on the imported object
     socketPlugins.taResolve = {};
     socketPlugins.taResolve.toggle = async function (socket, data) {
         if (!socket.uid) {
             throw new Error('[[error:not-logged-in]]');
         }
 
-        // --- PERMISSION CHECK ---
+        // 1. Check Permissions
         const isAdmin = await user.isAdministrator(socket.uid);
-        
-        // Ensure you created a group named "Teaching Assistants" in the Admin Panel
+        const isGlobalMod = await user.isGlobalModerator(socket.uid);
         const isTA = await groups.isMember(socket.uid, 'Teaching Assistants');
 
-        if (!isAdmin && !isTA) {
+        // Allow if they are ANY of these
+        if (!isAdmin && !isGlobalMod && !isTA) {
             throw new Error('[[error:no-privileges]]');
         }
 
@@ -86,6 +86,37 @@ plugin.appendResolveStatus = async function (data) {
             topic.isResolved = parseInt(status[index].isResolved, 10) === 1;
         });
     }
+    return data;
+};
+
+/**
+ * Hook: filter:topic.get
+ * Purpose: Tell the frontend template if the viewer is a TA
+ */
+plugin.appendTAPrivileges = async function (data) {
+    const uid = data.uid; 
+
+    if (!uid) {
+        return data;
+    }
+
+    // 1. Check Permissions
+    const isAdmin = await user.isAdministrator(uid);
+    const isGlobalMod = await user.isGlobalModerator(uid);
+    const isTA = await groups.isMember(uid, 'Teaching Assistants'); // Ensure this matches your group name exactly!
+
+    const isAuthorized = isAdmin || isGlobalMod || isTA;
+
+    // 2. Attach to Main Topic
+    data.topic.isTA = isAuthorized;
+
+    // 3. Attach to Every Post (So post.tpl can see it)
+    if (data.topic.posts && Array.isArray(data.topic.posts)) {
+        data.topic.posts.forEach(post => {
+            post.isTA = isAuthorized;
+        });
+    }
+
     return data;
 };
 
