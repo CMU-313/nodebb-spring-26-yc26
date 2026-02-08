@@ -1,0 +1,12 @@
+{
+    "id": "nodebb-plugin-ta-resolve",
+    "name": "TA Resolve & Archive",
+    "description": "Allows TAs to resolve questions and archives them.",
+    "library": "./library.js",
+    "hooks": [
+        { "hook": "filter:topic.create", "method": "setTopicDefault" },
+        { "hook": "filter:topic.reply", "method": "checkIfResolved" },
+        { "hook": "filter:topics.get", "method": "appendResolveStatus" },
+        { "hook": "static:app.load", "method": "init" }
+    ]
+}
