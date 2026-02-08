@@ -114,12 +114,12 @@
 					{{{ if (cid == "4") }}}
 						{{{ if posts.isTA }}}
 							<button component="post/resolve" 
-									class="btn btn-ghost btn-sm resolve-toggle {{{ if posts.resolved }}}resolved{{{ end }}}" 
+									class="btn btn-ghost btn-sm resolve-toggle {{{ if posts.isResolved }}}resolved{{{ end }}}" 
 									data-pid="{posts.pid}"
-									data-resolved="{{{ if posts.resolved }}}true{{{ else }}}false{{{ end }}}"
-									title="{{{ if posts.resolved }}}[[topic:mark-unresolved]]{{{ else }}}[[topic:mark-resolved]]{{{ end }}}">
-								<i class="fa fa-fw {{{ if posts.resolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
-								<span class="d-none d-md-inline">{{{ if posts.resolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
+									data-resolved="{{{ if posts.isResolved }}}true{{{ else }}}false{{{ end }}}"
+									title="{{{ if posts.isResolved }}}[[topic:mark-unresolved]]{{{ else }}}[[topic:mark-resolved]]{{{ end }}}">
+								<i class="fa fa-fw {{{ if posts.isResolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
+								<span class="d-none d-md-inline">{{{ if posts.isResolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
 							</button>
 						{{{ end }}}
 					{{{ end }}}
