@@ -4,82 +4,76 @@ define('forum/topic/approve', [], function () {
 	const Approve = {};
 
 	Approve.init = function () {
-		// Only admins / global mods
+		// Only allow admins/moderators to approve answers
 		if (!app.user.isAdmin && !app.user.isGlobalMod) {
 			return;
 		}
-		// Clean up approve button on every page navigation (SPA-safe)
-		$(window).on('action:ajaxify.start', function () {
-			$('[component="post/approve-answer"]').closest('li').remove();
-		});
+
+		const cid = ajaxify.data.cid;
+
+		/// Hide approve button if not in category 4
+		if (cid !== 4) {
+			$('[component="post/approve-answer-container"]').remove();
+			return;
+		}
+
+		// Only allow admins/moderators to approve answers
+		if (!app.user.isAdmin && !app.user.isGlobalMod) {
+			$('[component="post/approve-answer-container"]').remove();
+			return;
+		}
 
 		// Add approve menu item when post menu is shown
 		$(document).on('shown.bs.dropdown', '[component="post/tools"]', function () {
-			const cid = ajaxify.data.cid;
 			const $dropdown = $(this);
-			const $menu = $dropdown.find('.dropdown-menu');
-
-			// ALWAYS remove first (SPA-safe)
-			$menu.find('[component="post/approve-answer"]').closest('li').remove();
-
-			// Only add for allowed categories
-			if (!ALLOWED_CIDS.includes(cid)) {
-				return;
-			}
-
 			const $post = $dropdown.closest('[component="post"]');
 			const postIndex = parseInt($post.attr('data-index'), 10);
 
+			// Only for reply posts (index > 0)
 			if (postIndex === 0) {
 				return;
 			}
 
+			const $menu = $dropdown.find('.dropdown-menu');
 			const approved = $post.attr('data-approved') === 'true';
-			const text = approved ? 'Unapprove answer' : 'Approve answer';
 
+			// Check if already added
+			if ($menu.find('[component="post/approve-answer"]').length) {
+				return;
+			}
+
+			// Add approve menu item
+			const approveText = approved ? 'Unapprove answer' : 'Approve answer';
 			const menuItem = $(`
 				<li>
-					<a class="dropdown-item d-flex align-items-center gap-2"
-					component="post/approve-answer"
-					href="#">
-						<i class="fa fa-fw fa-check-circle text-secondary"></i>
-						<span>${text}</span>
+					<a class="dropdown-item rounded-1 d-flex align-items-center gap-2" component="post/approve-answer" role="menuitem" href="#">
+						<span class="menu-icon"><i class="fa fa-fw text-secondary fa-check-circle"></i></span> ${approveText}
 					</a>
 				</li>
 			`);
 
+			// Add after Edit button
 			$menu.find('li').first().after(menuItem);
 		});
 
-
-		// Handle approve clicks
+		// Handle approve button clicks
 		$(document).on('click', '[component="post/approve-answer"]', function (e) {
 			e.preventDefault();
 
-			// Safety check again
-			if (ajaxify.data.cid !== 4) {
-				return;
-			}
-
 			const $link = $(this);
 			const $post = $link.closest('[component="post"]');
+			const pid = $post.attr('data-pid');
 			const approved = $post.attr('data-approved') === 'true';
+			const newState = !approved;
 
-			updateApproveUI($post, !approved);
+			// Update UI
+			updateApproveUI($post, newState);
+			console.log('Toggled approve state for post', pid, 'to', newState);
 
-			$link.closest('.dropdown')
-				.find('[data-bs-toggle="dropdown"]')
-				.dropdown('hide');
-		});
-
-		// Clean up when navigating away from cid 4
-		$(window).on('action:ajaxify.end', function () {
-			if (ajaxify.data.cid !== 4) {
-				$('[component="post/approve-answer"]').closest('li').remove();
-			}
+			// Close dropdown
+			$link.closest('.dropdown').find('[data-bs-toggle="dropdown"]').dropdown('hide');
 		});
 	};
-
 
 	function updateApproveUI($post, approved) {
 		$post.attr('data-approved', approved);
