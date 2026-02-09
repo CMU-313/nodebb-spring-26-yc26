@@ -5,7 +5,6 @@
     "library": "./library.js",
     "hooks": [
         { "hook": "filter:topic.create", "method": "setTopicDefault" },
-        { "hook": "filter:topic.reply", "method": "checkIfResolved" },
         { "hook": "filter:topics.get", "method": "appendResolveStatus" },
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:topic.get", "method": "appendTAPrivileges" }

@@ -94,29 +94,36 @@ plugin.appendResolveStatus = async function (data) {
  * Purpose: Tell the frontend template if the viewer is a TA
  */
 plugin.appendTAPrivileges = async function (data) {
-    const uid = data.uid; 
-
-    if (!uid) {
+    // Safety check
+    if (!data.topic) {
         return data;
     }
 
-    // 1. Check Permissions
-    const isAdmin = await user.isAdministrator(uid);
-    const isGlobalMod = await user.isGlobalModerator(uid);
-    const isTA = await groups.isMember(uid, 'Teaching Assistants'); // Ensure this matches your group name exactly!
+    const uid = data.uid; 
+    
+    let isAuthorized = false;
+    
+    if (uid) {
+        const isAdmin = await user.isAdministrator(uid);
+        const isGlobalMod = await user.isGlobalModerator(uid);
+        const isTA = await groups.isMember(uid, 'Teaching Assistants');
+        isAuthorized = isAdmin || isGlobalMod || isTA;
+    }
 
-    const isAuthorized = isAdmin || isGlobalMod || isTA;
+    // Get the resolved status
+    const isResolved = await topics.getTopicField(data.topic.tid, 'isResolved');
+    const resolvedBool = parseInt(isResolved, 10) === 1;
 
-    // 2. Attach to Main Topic
     data.topic.isTA = isAuthorized;
+    data.topic.isResolved = resolvedBool;
 
-    // 3. Attach to Every Post (So post.tpl can see it)
     if (data.topic.posts && Array.isArray(data.topic.posts)) {
         data.topic.posts.forEach(post => {
             post.isTA = isAuthorized;
+            post.isResolved = resolvedBool;
         });
     }
-
+    
     return data;
 };
 
