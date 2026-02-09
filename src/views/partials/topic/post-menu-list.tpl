@@ -6,7 +6,7 @@
 </li>
 
 <li component="post/approve-answer-container" class="{{{ if posts.isOriginalPost }}}hidden{{{ end }}}">
-	<a class="dropdown-item rounded-1 d-flex align-items-center gap-2" component="post/approve-answer" role="menuitem" href="#" data-approved="{posts.approved}">
+	<a class="dropdown-item rounded-1 d-flex align-items-center gap-2" component="post/approve-answer" role="menuitem" href="#" data-approved="{{{ if posts.approved }}}true{{{ else }}}false{{{ end }}}">
 		<span class="menu-icon">
 			<i component="post/approve-icon" class="fa fa-fw {{{ if posts.approved }}}fa-times-circle text-danger{{{ else }}}fa-check-circle text-secondary{{{ end }}}"></i>
 		</span>
