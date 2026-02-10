@@ -5,9 +5,8 @@
     "library": "./library.js",
     "hooks": [
         { "hook": "filter:topic.create", "method": "setTopicDefault" },
-        { "hook": "filter:topics.get", "method": "appendResolveStatus" },
+        { "hook": "filter:topics.get", "method": "appendResolveStatusAndSort" },
         { "hook": "static:app.load", "method": "init" },
-        { "hook": "filter:topic.get", "method": "appendTAPrivileges" },
-        { "hook": "filter:category.topics.prepare", "method": "sortUnresolvedFirst" }
+        { "hook": "filter:topic.get", "method": "appendTAPrivileges" }
     ]
 }

@@ -124,8 +124,8 @@
 
 						{{{ else }}}
 							<span class="btn btn-ghost btn-sm" style="cursor: default; opacity: 1;">
-								<i class="fa fa-fw {{{ if posts.resolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
-								<span class="d-none d-md-inline">{{{ if posts.resolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
+								<i class="fa fa-fw {{{ if posts.isResolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
+								<span class="d-none d-md-inline">{{{ if posts.isResolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
 							</span>
 						{{{ end }}}
 

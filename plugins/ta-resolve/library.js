@@ -13,7 +13,10 @@ const plugin = {};
  * Hook: filter:topic.create
  */
 plugin.setTopicDefault = async function (data) {
-    data.topic.isResolved = 0; 
+    // Logs for debugging
+    // console.log('[TA-Resolve] setTopicDefault called for topic:', data.topic.tid);
+    data.topic.isResolved = 0;
+    // console.log('[TA-Resolve] Set isResolved to 0 for topic:', data.topic.tid);
     return data;
 };
 
@@ -79,8 +82,8 @@ plugin.checkIfResolved = async function (data) {
         if (!isAdmin && !isGlobalMod && !isTA) {
             await topics.setTopicField(tid, 'isResolved', 0);
             
-            // Optional: Log it so you know it happened
-            console.log(`[TA-Resolve] Auto-unresolved topic ${tid} because student ${uid} replied.`);
+            // Logs for debugging
+            // console.log(`[TA-Resolve] Auto-unresolved topic ${tid} because student ${uid} replied.`);
         }
     }
 
@@ -88,57 +91,80 @@ plugin.checkIfResolved = async function (data) {
 };
 
 /**
- * Helper: Ensure the Frontend actually sees the status
+ * Helper: Ensure the Frontend actually sees the status AND sort for staff
  * Hook: filter:topics.get
  */
-plugin.appendResolveStatus = async function (data) {
-    if (data.topics && data.topics.length) {
+plugin.appendResolveStatusAndSort = async function (data) {
+    try {
+        // Logs for debugging
+        // console.log('[TA-Resolve] appendResolveStatusAndSort called, topics count:', data.topics ? data.topics.length : 0);
+        
+        if (!data.topics || !data.topics.length) {
+            // Logs for debugging
+            // console.log('[TA-Resolve] No topics to process');
+            return data;
+        }
+
         // Fetch isResolved status for all topics in the view
         const tids = data.topics.map(t => t.tid);
         const status = await topics.getTopicsFields(tids, ['isResolved']);
+        // Logs for debugging
+        // console.log('[TA-Resolve] Fetched isResolved status:', status);
         
         // Merge status into the result
         data.topics.forEach((topic, index) => {
             topic.isResolved = parseInt(status[index].isResolved, 10) === 1;
+            // Logs for debugging
+            // console.log('[TA-Resolve] Topic', topic.tid, 'isResolved:', topic.isResolved);
         });
-    }
-    return data;
-};
 
-/**
- * Hook: filter:category.topics.prepare
- * Purpose: Sorts 'Unresolved' topics to the top of the list.
- */
-plugin.sortUnresolvedFirst = async function (data) {
-    // 1. SAFETY CHECK (The Fix): 
-    // If data is missing, or wrong category, or NO TOPICS exist, stop immediately.
-    if (!data || parseInt(data.cid, 10) !== 4 || !data.topics || !Array.isArray(data.topics)) {
+        // NOW SORT IF: topics are in category 4 AND user is staff
+        // Get the category ID from the first topic (they should all be the same in a category view)
+        const cid = data.topics.length > 0 ? parseInt(data.topics[0].cid, 10) : null;
+        
+        if (cid === 4 && data.uid) {
+            // Logs for debugging
+            // console.log('[TA-Resolve] Is category 4 and user logged in, checking permissions');
+            
+            try {
+                const isAdmin = await user.isAdministrator(data.uid);
+                const isGlobalMod = await user.isGlobalModerator(data.uid);
+                const isTA = await groups.isMember(data.uid, 'Teaching Assistants');
+                // Logs for debugging
+                // console.log('[TA-Resolve] isAdmin:', isAdmin, 'isGlobalMod:', isGlobalMod, 'isTA:', isTA);
+
+                if (isAdmin || isGlobalMod || isTA) {
+                    // Logs for debugging
+                    // console.log('[TA-Resolve] User is staff - sorting unresolved first');
+                    const unresolved = [];
+                    const resolved = [];
+
+                    data.topics.forEach((topic) => {
+                        if (topic.isResolved) {
+                            resolved.push(topic);
+                        } else {
+                            unresolved.push(topic);
+                        }
+                    });
+                    
+                    // Logs for debugging
+                    // console.log('[TA-Resolve] Final sort: unresolved count:', unresolved.length, 'resolved count:', resolved.length);
+                    data.topics = unresolved.concat(resolved);
+                }
+            } catch (permErr) {
+                // Logs for debugging
+                // console.error('[TA-Resolve] Error checking permissions:', permErr.message);
+                // Continue without sorting if permission check fails
+            }
+        }
+
+        return data;
+    } catch (err) {
+        // Logs for debugging
+        // console.error('[TA-Resolve] Error in appendResolveStatusAndSort:', err.message);
+        // Return data unmodified if anything fails
         return data;
     }
-
-    const unresolved = [];
-    const resolved = [];
-
-    // 2. SPLIT THE TOPICS
-    data.topics.forEach(function (topic) {
-        // If isResolved is 1, it goes to the bottom.
-        // If it's 0 (or null/undefined), it stays at the top.
-        data.topics.forEach(function (topic) {
-        // DEBUG LOG
-            console.log(`Topic ${topic.tid}: isResolved = ${topic.isResolved}`); 
-
-            if (topic.isResolved && parseInt(topic.isResolved, 10) === 1) {
-                resolved.push(topic);
-            } else {
-                unresolved.push(topic);
-            }
-        });
-    });
-
-    // 3. MERGE THEM BACK
-    data.topics = unresolved.concat(resolved);
-
-    return data;
 };
 
 /**
@@ -146,37 +172,50 @@ plugin.sortUnresolvedFirst = async function (data) {
  * Purpose: Tell the frontend template if the viewer is a TA
  */
 plugin.appendTAPrivileges = async function (data) {
-    // Safety check
-    if (!data.topic) {
+    try {
+        // Safety check
+        if (!data.topic) {
+            return data;
+        }
+
+        const uid = data.uid; 
+        
+        let isAuthorized = false;
+        
+        if (uid) {
+            try {
+                const isAdmin = await user.isAdministrator(uid);
+                const isGlobalMod = await user.isGlobalModerator(uid);
+                const isTA = await groups.isMember(uid, 'Teaching Assistants');
+                isAuthorized = isAdmin || isGlobalMod || isTA;
+            } catch (permErr) {
+                // Logs for debugging
+                // console.error('[TA-Resolve] Error checking permissions in appendTAPrivileges:', permErr.message);
+                // Continue without authorized status if permission check fails
+            }
+        }
+
+        // Get the resolved status
+        const isResolved = await topics.getTopicField(data.topic.tid, 'isResolved');
+        const resolvedBool = parseInt(isResolved, 10) === 1;
+
+        data.topic.isTA = isAuthorized;
+        data.topic.isResolved = resolvedBool;
+
+        if (data.topic.posts && Array.isArray(data.topic.posts)) {
+            data.topic.posts.forEach(post => {
+                post.isTA = isAuthorized;
+                post.isResolved = resolvedBool;
+            });
+        }
+        
+        return data;
+    } catch (err) {
+        // Logs for debugging
+        // console.error('[TA-Resolve] Error in appendTAPrivileges:', err.message);
+        // Return data unmodified if anything fails
         return data;
     }
-
-    const uid = data.uid; 
-    
-    let isAuthorized = false;
-    
-    if (uid) {
-        const isAdmin = await user.isAdministrator(uid);
-        const isGlobalMod = await user.isGlobalModerator(uid);
-        const isTA = await groups.isMember(uid, 'Teaching Assistants');
-        isAuthorized = isAdmin || isGlobalMod || isTA;
-    }
-
-    // Get the resolved status
-    const isResolved = await topics.getTopicField(data.topic.tid, 'isResolved');
-    const resolvedBool = parseInt(isResolved, 10) === 1;
-
-    data.topic.isTA = isAuthorized;
-    data.topic.isResolved = resolvedBool;
-
-    if (data.topic.posts && Array.isArray(data.topic.posts)) {
-        data.topic.posts.forEach(post => {
-            post.isTA = isAuthorized;
-            post.isResolved = resolvedBool;
-        });
-    }
-    
-    return data;
 };
 
 module.exports = plugin;
