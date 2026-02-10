@@ -143,7 +143,7 @@ plugin.appendResolveStatusAndSort = async function (data) {
 
         // NOW SORT IF: topics are in category 4 AND user is staff
         // Get the category ID from the first topic (they should all be the same in a category view)
-        const cid = data.topics.length > 0 ? parseInt(data.topics[0].cid, 10) : null;
+        const cid = parseInt(data.topics[0].cid, 10);
         
         if (cid === 4 && data.uid) {
             // Logs for debugging
