@@ -121,7 +121,14 @@
 								<i class="fa fa-fw {{{ if posts.isResolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
 								<span class="d-none d-md-inline">{{{ if posts.isResolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
 							</button>
+
+						{{{ else }}}
+							<span class="btn btn-ghost btn-sm" style="cursor: default; opacity: 1;">
+								<i class="fa fa-fw {{{ if posts.resolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
+								<span class="d-none d-md-inline">{{{ if posts.resolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
+							</span>
 						{{{ end }}}
+
 					{{{ end }}}
 					<a component="post/reply" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:reply]]"><i class="fa fa-fw fa-reply text-primary"></i></a>
 					<a component="post/quote" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:quote]]"><i class="fa fa-fw fa-quote-right text-primary"></i></a>
