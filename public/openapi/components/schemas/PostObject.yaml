@@ -155,6 +155,10 @@ PostObject:
       type: boolean
     replies:
       type: number
+    supportedByInstructor:
+      type: boolean
+      nullable: true
+      description: Whether the post has been marked as supported by an instructor.
 PostDataObject:
   description: The output as returned from `Posts.getPostsData`
   allOf:

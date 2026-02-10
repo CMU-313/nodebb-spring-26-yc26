@@ -11,6 +11,9 @@
                 <a class="lh-1 fw-semibold" href="{config.relative_path}/user/{./user.userslug}">{../user.displayname}</a>
             </div>
             <span class="timeago text-muted lh-1" title="{./timestampISO}"></span>
+            {{{ if ./supportedByInstructor }}}
+            <span class="badge bg-success rounded-1">Supported by Instructor</span>
+            {{{ end }}}
         </div>
 
         <div component="post/content" class="content text-sm text-break">

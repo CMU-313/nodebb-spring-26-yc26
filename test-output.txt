@@ -1,0 +1,96 @@
+
+> nodebb@4.8.0 test
+> nyc --reporter=html --reporter=text-summary mocha
+
+info: configJSON
+info: {
+    "url": "http://127.0.0.1:4567",
+    "secret": "a4d940b1-37ee-4602-bfa9-36ac50a931ef",
+    "database": "redis",
+    "port": "4567",
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": "",
+        "database": 0
+    },
+    "test_database": {
+    "host": "127.0.0.1",
+    "port": "6379",
+    "password": "",
+    "database": "1"
+    }
+}
+info: database config redis {"database":"1","host":"127.0.0.1","password":"","port":"6379"}
+info: environment production
+
+info: test_database flushed
+info: Populating database with default configs, if not already set...
+
+info: Giving default global privileges...
+
+info: Enabling default plugins
+
+info: [install/enableDefaultPlugins] activating default plugins {"0":"nodebb-plugin-dbsearch","1":"nodebb-widget-essentials","2":"nodebb-plugin-composer-default"}
+info: [socket.io] Restricting access to origin: *:*
+info: [api] Adding 0 route(s) to `api/v3/plugins`
+info: [router] Routes added
+info: 🎉 NodeBB Ready
+info: 🤝 Setting 'trust proxy' to true
+info: 📡 NodeBB is now listening on: 0.0.0.0:4567
+info: 🔗 Canonical URL: http://127.0.0.1:4567
+
+  .............................(node:46411) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+(Use `node --trace-warnings ...` to show where the warning was created)
+...........................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ........................................................
+  ..........!
+
+
+error [user.create] Validation email failed to send
+[emailer.send] Error: [[error:sendmail-not-found]]
+    at Emailer.sendToEmail (/workspaces/nodebb-spring-26-yc26/src/emailer.js:17:2657)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Emailer.send (/workspaces/nodebb-spring-26-yc26/src/emailer.js:16:202)
+    at async UserEmail.sendValidationEmail (/workspaces/nodebb-spring-26-yc26/src/user/email.js:10:2289)
+    at async create (/workspaces/nodebb-spring-26-yc26/src/user/create.js:2:5364)
+    at async User.create (/workspaces/nodebb-spring-26-yc26/src/user/create.js:2:1539)
+    at async setupData (/workspaces/nodebb-spring-26-yc26/test/api.js:190:32)
+    at async Context.<anonymous> (/workspaces/nodebb-spring-26-yc26/test/api.js:496:6)
+error [posts/uploads] Error while saving post upload sizes (files/test.png): Input file contains unsupported image format
+
+
+  570 passing (12s)
+  1 failing
+
+  1) response body should match schema definition:
+     AssertionError [ERR_ASSERTION]: "supportedByInstructor" was found in response, but is not defined in schema (path: GET /api/search, context: root.posts), SCHEMA {"pid":1,"tid":1,"toPid":null,"url":"http://127.0.0.1:4567/post/1","content":"Test topic content","sourceContent":null,"uid":1,"timestamp":1770764322638,"deleted":false,"upvotes":0,"downvotes":0,"replies":0,"supportedByInstructor":null,"attachments":[],"votes":0,"timestampISO":"2026-02-10T22:58:42.638Z","user":{"uid":1,"username":"admin","userslug":"admin","picture":null,"status":"online","displayname":"admin","icon:bgColor":"#673ab7","icon:text":"A","isLocal":true},"topic":{"uid":1,"tid":1,"title":"Test Topic","cid":1,"tags":[],"slug":"1/test-topic","deleted":0,"scheduled":false,"postcount":1,"mainPid":1,"teaserPid":null,"timestamp":1770764322636,"titleRaw":"Test Topic","timestampISO":"2026-02-10T22:58:42.636Z"},"category":{"cid":1,"name":"test","icon":"hidden","slug":"1/test","parentCid":0,"bgColor":"#AB4642","color":"#ffffff","backgroundImage":"","imageClass":"cover"},"isMainPost":true}
+      at /workspaces/nodebb-spring-26-yc26/test/api.js:700:4
+      at Array.forEach (<anonymous>)
+      at compare (test/api.js:695:25)
+      at /workspaces/nodebb-spring-26-yc26/test/api.js:681:10
+      at Array.forEach (<anonymous>)
+      at /workspaces/nodebb-spring-26-yc26/test/api.js:680:24
+      at Array.forEach (<anonymous>)
+      at compare (test/api.js:643:12)
+      at Context.<anonymous> (test/api.js:575:7)
+      at process.processImmediate (node:internal/timers:485:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+
+
+
+
+=============================== Coverage summary ===============================
+Statements   : 41.95% ( 13235/31549 )
+Branches     : 24.25% ( 4020/16573 )
+Functions    : 32.52% ( 1815/5580 )
+Lines        : 42.55% ( 12905/30328 )
+================================================================================

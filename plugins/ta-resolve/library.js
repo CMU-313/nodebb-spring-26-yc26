@@ -275,8 +275,44 @@ plugin.addSupportAnswerTool = async function (data) {
 /**
  * Hook: filter:topics.addPostData
  * Normalize supportedByInstructor for template (boolean-like).
+ * Ensures the badge is visible to all viewers, including students.
+ * Batch-fetches the field from DB when missing (e.g. cache returned stale post object).
  */
 plugin.normalizeSupportedByInstructor = async function (data) {
+    if (!data.posts || !Array.isArray(data.posts)) {
+        return data;
+    }
+    const pidsMissing = [];
+    data.posts.forEach((post) => {
+        if (post && !post.hasOwnProperty('supportedByInstructor')) {
+            pidsMissing.push(post.pid);
+        }
+    });
+    if (pidsMissing.length > 0) {
+        const fetched = await posts.getPostsFields(pidsMissing, ['supportedByInstructor']);
+        const pidToValue = {};
+        pidsMissing.forEach((pid, i) => {
+            pidToValue[String(pid)] = fetched[i] ? fetched[i].supportedByInstructor : undefined;
+        });
+        data.posts.forEach((post) => {
+            if (post && pidToValue.hasOwnProperty(String(post.pid))) {
+                post.supportedByInstructor = pidToValue[String(post.pid)];
+            }
+        });
+    }
+    data.posts.forEach((post) => {
+        if (post) {
+            post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+        }
+    });
+    return data;
+};
+
+/**
+ * Hook: filter:post.getPostSummaryByPids
+ * Normalize supportedByInstructor for summary views (search, recent posts, profile posts).
+ */
+plugin.normalizeSupportedByInstructorSummary = async function (data) {
     if (data.posts && Array.isArray(data.posts)) {
         data.posts.forEach((post) => {
             if (post) {

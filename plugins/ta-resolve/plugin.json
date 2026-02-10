@@ -9,6 +9,7 @@
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:topic.get", "method": "appendTAPrivileges" },
         { "hook": "filter:post.tools", "method": "addSupportAnswerTool" },
-        { "hook": "filter:topics.addPostData", "method": "normalizeSupportedByInstructor" }
+        { "hook": "filter:topics.addPostData", "method": "normalizeSupportedByInstructor" },
+        { "hook": "filter:post.getPostSummaryByPids", "method": "normalizeSupportedByInstructorSummary" }
     ]
 }
