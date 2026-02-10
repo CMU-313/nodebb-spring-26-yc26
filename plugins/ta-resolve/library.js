@@ -2,6 +2,7 @@
 
 const db = require.main.require('./src/database');
 const topics = require.main.require('./src/topics');
+const posts = require.main.require('./src/posts');
 const user = require.main.require('./src/user');
 const groups = require.main.require('./src/groups'); // Import groups module
 const socketPlugins = require.main.require('./src/socket.io/plugins');
@@ -57,6 +58,28 @@ plugin.init = async function (params) {
         }
 
         return { isResolved: newStatus };
+    };
+
+    // Support Answer: admins can mark a post as "Supported by Instructor"
+    socketPlugins.taResolve.supportAnswer = async function (socket, data) {
+        if (!socket.uid) {
+            throw new Error('[[error:not-logged-in]]');
+        }
+        const isAdmin = await user.isAdministrator(socket.uid);
+        if (!isAdmin) {
+            throw new Error('[[error:no-privileges]]');
+        }
+        if (!data || !data.pid) {
+            throw new Error('[[error:invalid-data]]');
+        }
+        const value = data.remove ? 0 : 1;
+        await posts.setPostField(data.pid, 'supportedByInstructor', value);
+        return { supportedByInstructor: value };
+    };
+
+    // Remove support: same socket, pass remove: true
+    socketPlugins.taResolve.removeSupport = async function (socket, data) {
+        return socketPlugins.taResolve.supportAnswer(socket, { ...data, remove: true });
     };
 };
 
@@ -216,6 +239,52 @@ plugin.appendTAPrivileges = async function (data) {
         // Return data unmodified if anything fails
         return data;
     }
+};
+
+/**
+ * Hook: filter:post.tools
+ * Add "Support Answer" and "Remove support" to the three-dots menu for admins.
+ */
+plugin.addSupportAnswerTool = async function (data) {
+    if (!data.uid) {
+        return data;
+    }
+    const isAdmin = await user.isAdministrator(data.uid);
+    if (!isAdmin) {
+        return data;
+    }
+    const supported = await posts.getPostField(data.pid, 'supportedByInstructor');
+    const isSupported = parseInt(supported, 10) === 1;
+
+    if (!isSupported) {
+        data.tools.push({
+            action: 'post/support-answer',
+            icon: 'fa-check-circle',
+            html: 'Support Answer',
+        });
+    } else {
+        data.tools.push({
+            action: 'post/remove-support',
+            icon: 'fa-times-circle',
+            html: 'Remove support',
+        });
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:topics.addPostData
+ * Normalize supportedByInstructor for template (boolean-like).
+ */
+plugin.normalizeSupportedByInstructor = async function (data) {
+    if (data.posts && Array.isArray(data.posts)) {
+        data.posts.forEach((post) => {
+            if (post) {
+                post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+            }
+        });
+    }
+    return data;
 };
 
 module.exports = plugin;

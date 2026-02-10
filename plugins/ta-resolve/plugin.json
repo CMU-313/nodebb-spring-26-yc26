@@ -7,6 +7,8 @@
         { "hook": "filter:topic.create", "method": "setTopicDefault" },
         { "hook": "filter:topics.get", "method": "appendResolveStatusAndSort" },
         { "hook": "static:app.load", "method": "init" },
-        { "hook": "filter:topic.get", "method": "appendTAPrivileges" }
+        { "hook": "filter:topic.get", "method": "appendTAPrivileges" },
+        { "hook": "filter:post.tools", "method": "addSupportAnswerTool" },
+        { "hook": "filter:topics.addPostData", "method": "normalizeSupportedByInstructor" }
     ]
 }

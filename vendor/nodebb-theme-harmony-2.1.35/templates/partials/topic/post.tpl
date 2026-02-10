@@ -56,6 +56,10 @@
 				<span class="badge bg-danger rounded-1">[[user:banned]]</span>
 				{{{ end }}}
 
+				{{{ if posts.supportedByInstructor }}}
+				<span class="badge bg-success rounded-1">Supported by Instructor</span>
+				{{{ end }}}
+
 				<div class="d-flex gap-1 align-items-center">
 					<span class="text-muted">{generateWrote(@value, config.timeagoCutoff)}</span>
 
