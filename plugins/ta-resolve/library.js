@@ -58,18 +58,34 @@ plugin.init = async function (params) {
 };
 
 /**
- * Optional: Resolved discussions are distinct and cannot be replied to.
  * Hook: filter:topic.reply
+ * Purpose: If a Student replies to a Resolved topic, automatically mark it Unresolved.
  */
-// plugin.checkIfResolved = async function (data) {
-//     const isResolved = await topics.getTopicField(data.topic.tid, 'isResolved');
+plugin.checkIfResolved = async function (data) {
+    const { tid, uid } = data.post;
+
+    // 1. Check if the topic is currently Resolved
+    // We fetch the topic data to see its current state
+    const topicData = await topics.getTopicData(tid);
     
-//     if (parseInt(isResolved, 10) === 1) {
-//         throw new Error('This discussion is resolved and cannot be replied to.');
-//     }
-    
-//     return data;
-// };
+    if (parseInt(topicData.isResolved, 10) === 1) {
+        
+        // 2. Check if the replier is a TA/Admin
+        const isAdmin = await user.isAdministrator(uid);
+        const isGlobalMod = await user.isGlobalModerator(uid);
+        const isTA = await groups.isMember(uid, 'Teaching Assistants');
+
+        // 3. If they are NOT a TA (meaning they are a Student), unresolve it.
+        if (!isAdmin && !isGlobalMod && !isTA) {
+            await topics.setTopicField(tid, 'isResolved', 0);
+            
+            // Optional: Log it so you know it happened
+            console.log(`[TA-Resolve] Auto-unresolved topic ${tid} because student ${uid} replied.`);
+        }
+    }
+
+    return data;
+};
 
 /**
  * Helper: Ensure the Frontend actually sees the status
@@ -86,6 +102,42 @@ plugin.appendResolveStatus = async function (data) {
             topic.isResolved = parseInt(status[index].isResolved, 10) === 1;
         });
     }
+    return data;
+};
+
+/**
+ * Hook: filter:category.topics.prepare
+ * Purpose: Sorts 'Unresolved' topics to the top of the list.
+ */
+plugin.sortUnresolvedFirst = async function (data) {
+    // 1. SAFETY CHECK (The Fix): 
+    // If data is missing, or wrong category, or NO TOPICS exist, stop immediately.
+    if (!data || parseInt(data.cid, 10) !== 4 || !data.topics || !Array.isArray(data.topics)) {
+        return data;
+    }
+
+    const unresolved = [];
+    const resolved = [];
+
+    // 2. SPLIT THE TOPICS
+    data.topics.forEach(function (topic) {
+        // If isResolved is 1, it goes to the bottom.
+        // If it's 0 (or null/undefined), it stays at the top.
+        data.topics.forEach(function (topic) {
+        // DEBUG LOG
+            console.log(`Topic ${topic.tid}: isResolved = ${topic.isResolved}`); 
+
+            if (topic.isResolved && parseInt(topic.isResolved, 10) === 1) {
+                resolved.push(topic);
+            } else {
+                unresolved.push(topic);
+            }
+        });
+    });
+
+    // 3. MERGE THEM BACK
+    data.topics = unresolved.concat(resolved);
+
     return data;
 };
 
