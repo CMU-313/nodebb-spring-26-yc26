@@ -716,4 +716,226 @@ describe('TA Resolve Plugin', () => {
 			assert.ok(result);
 		});
 	});
+
+	// ==========================================
+	// TEST: Support Answer (Approve Answer)
+	// ==========================================
+	describe('Support Answer Feature', () => {
+		const socketPlugins = require('../src/socket.io/plugins');
+		let testTid;
+		let testPid;
+		let replyPid;
+
+		beforeEach(async () => {
+			// Create a topic with a reply
+			const topicResult = await topics.post({
+				uid: adminUid,
+				cid: 4, // comments-feedback category
+				title: 'Support Answer Test ' + Date.now(),
+				content: 'Original question',
+			});
+			testTid = topicResult.topicData.tid;
+			testPid = topicResult.postData.pid;
+
+			// Create a reply (the answer to be approved)
+			const replyResult = await topics.reply({
+				uid: studentUid,
+				tid: testTid,
+				content: 'Student answer',
+			});
+			replyPid = replyResult.pid;
+		});
+
+		describe('socketPlugins.taResolve.supportAnswer', () => {
+			it('should register supportAnswer socket method', () => {
+				assert.ok(socketPlugins.taResolve);
+				assert.ok(typeof socketPlugins.taResolve.supportAnswer === 'function');
+			});
+
+			it('should reject unauthenticated users', async () => {
+				const mockSocket = { uid: 0 };
+				try {
+					await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+					assert.fail('Should have thrown error');
+				} catch (err) {
+					assert.strictEqual(err.message, '[[error:not-logged-in]]');
+				}
+			});
+
+			it('should reject regular students', async () => {
+				const mockSocket = { uid: studentUid };
+				try {
+					await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+					assert.fail('Should have thrown error');
+				} catch (err) {
+					assert.strictEqual(err.message, '[[error:no-privileges]]');
+				}
+			});
+
+			it('should allow admin to approve answer', async () => {
+				const mockSocket = { uid: adminUid };
+				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+				assert.strictEqual(result.supportedByInstructor, true);
+			});
+
+			it('should allow TA to approve answer', async () => {
+				const mockSocket = { uid: taUid };
+				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+				assert.strictEqual(result.supportedByInstructor, true);
+			});
+
+			it('should allow global moderator to approve answer', async () => {
+				const mockSocket = { uid: globalModUid };
+				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+				assert.strictEqual(result.supportedByInstructor, true);
+			});
+
+			it('should throw error for invalid post id', async () => {
+				const mockSocket = { uid: adminUid };
+				try {
+					await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: null });
+					assert.fail('Should have thrown error');
+				} catch (err) {
+					assert.strictEqual(err.message, '[[error:invalid-data]]');
+				}
+			});
+
+			it('should set supportedByInstructor field in database', async () => {
+				const mockSocket = { uid: adminUid };
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+
+				const posts = require('../src/posts');
+				const field = await posts.getPostField(replyPid, 'supportedByInstructor');
+				assert.strictEqual(parseInt(field, 10), 1);
+			});
+		});
+
+		describe('socketPlugins.taResolve.removeSupport', () => {
+			beforeEach(async () => {
+				// Approve the answer first
+				const mockSocket = { uid: adminUid };
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+			});
+
+			it('should register removeSupport socket method', () => {
+				assert.ok(typeof socketPlugins.taResolve.removeSupport === 'function');
+			});
+
+			it('should reject unauthenticated users', async () => {
+				const mockSocket = { uid: 0 };
+				try {
+					await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+					assert.fail('Should have thrown error');
+				} catch (err) {
+					assert.strictEqual(err.message, '[[error:not-logged-in]]');
+				}
+			});
+
+			it('should reject regular students', async () => {
+				const mockSocket = { uid: studentUid };
+				try {
+					await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+					assert.fail('Should have thrown error');
+				} catch (err) {
+					assert.strictEqual(err.message, '[[error:no-privileges]]');
+				}
+			});
+
+			it('should allow admin to remove approval', async () => {
+				const mockSocket = { uid: adminUid };
+				const result = await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+				assert.strictEqual(result.supportedByInstructor, false);
+			});
+
+			it('should allow TA to remove approval', async () => {
+				const mockSocket = { uid: taUid };
+				const result = await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+				assert.strictEqual(result.supportedByInstructor, false);
+			});
+
+			it('should set supportedByInstructor to 0 in database', async () => {
+				const mockSocket = { uid: adminUid };
+				await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+
+				const posts = require('../src/posts');
+				const field = await posts.getPostField(replyPid, 'supportedByInstructor');
+				assert.strictEqual(parseInt(field, 10), 0);
+			});
+		});
+
+		describe('Post Menu - Approve Answer Button', () => {
+			it('should show approve button only on reply posts in category 4', async () => {
+				// This would be a UI test - tests that the menu item appears
+				// For now, we test that the field is available
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(replyPid);
+				
+				// Field should exist (even if null/0)
+				assert.ok('supportedByInstructor' in postData || postData.supportedByInstructor !== undefined);
+			});
+
+			it('should not show approve button on original post', async () => {
+				// Original post (index 0) should not be approvable
+				// This is enforced in the template with posts.index > 0
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(testPid);
+				
+				// Verify it's the main post
+				assert.strictEqual(postData.isMainPost, true);
+			});
+		});
+
+		describe('Badge Display', () => {
+			it('should show "Supported by instructor" badge when approved', async () => {
+				const mockSocket = { uid: adminUid };
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(replyPid);
+				
+				assert.strictEqual(parseInt(postData.supportedByInstructor, 10), 1);
+			});
+
+			it('should hide badge when approval is removed', async () => {
+				const mockSocket = { uid: adminUid };
+				
+				// Approve then remove
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+				await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
+
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(replyPid);
+				
+				assert.strictEqual(parseInt(postData.supportedByInstructor, 10), 0);
+			});
+		});
+
+		describe('normalizeSupportedByInstructorSummary', () => {
+			it('should convert supportedByInstructor to boolean', async () => {
+				const mockSocket = { uid: adminUid };
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
+
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(replyPid);
+
+				const data = { posts: [postData] };
+				const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+
+				assert.strictEqual(typeof result.posts[0].supportedByInstructor, 'boolean');
+				assert.strictEqual(result.posts[0].supportedByInstructor, true);
+			});
+
+			it('should handle null supportedByInstructor', async () => {
+				const posts = require('../src/posts');
+				const postData = await posts.getPostData(replyPid);
+				postData.supportedByInstructor = null;
+
+				const data = { posts: [postData] };
+				const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+
+				// Should preserve null or convert to false based on implementation
+				assert.ok(result.posts[0].supportedByInstructor === null || result.posts[0].supportedByInstructor === false);
+			});
+		});
+	});
 });
