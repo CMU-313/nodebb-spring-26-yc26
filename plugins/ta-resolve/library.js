@@ -65,8 +65,13 @@ plugin.init = async function (params) {
         if (!socket.uid) {
             throw new Error('[[error:not-logged-in]]');
         }
+        
+        // Check permissions - allow admin, global mod, or TA
         const isAdmin = await user.isAdministrator(socket.uid);
-        if (!isAdmin) {
+        const isGlobalMod = await user.isGlobalModerator(socket.uid);
+        const isTA = await groups.isMember(socket.uid, 'Teaching Assistants');
+        
+        if (!isAdmin && !isGlobalMod && !isTA) {
             throw new Error('[[error:no-privileges]]');
         }
         if (!data || !data.pid) {
