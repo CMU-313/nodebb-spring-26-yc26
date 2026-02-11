@@ -159,6 +159,14 @@ PostObject:
       type: boolean
       nullable: true
       description: Whether the post has been marked as supported by an instructor.
+    supportedByInstructorUid:
+      type: number
+      nullable: true
+      description: The UID of the user who marked the post as supported by an instructor.
+    supportedByInstructorTime:
+      type: number
+      nullable: true
+      description: The timestamp when the post was marked as supported by an instructor.
 PostDataObject:
   description: The output as returned from `Posts.getPostsData`
   allOf:

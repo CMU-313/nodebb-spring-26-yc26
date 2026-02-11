@@ -64,8 +64,8 @@
 				</div>
 
 				{{{ if posts.supportedByInstructor }}}
-					<span class="badge bg-success rounded-1">Supported by Instructor</span>
-				{{{ end }}}
+			<span class="badge bg-success rounded-1">Supported by Instructor</span>
+			{{{ end }}}
 
 				{{{ if posts.user.custom_profile_info.length }}}
 				<div>

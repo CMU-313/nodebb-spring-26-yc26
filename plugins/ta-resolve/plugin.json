@@ -5,6 +5,7 @@
     "library": "./library.js",
     "hooks": [
         { "hook": "filter:topic.create", "method": "setTopicDefault" },
+        { "hook": "filter:post.create", "method": "autoApproveAdminPosts" },
         { "hook": "filter:topics.get", "method": "appendResolveStatusAndSort" },
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:topic.get", "method": "appendTAPrivileges" },
