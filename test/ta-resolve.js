@@ -725,15 +725,26 @@ describe('TA Resolve Plugin', () => {
 		let testTid;
 		let testPid;
 		let replyPid;
+		let testCategoryId;
+
+		before(async () => {
+			// Create category 4 if it doesn't exist
+			const category = await categories.create({
+				name: 'Comments and Feedback',
+				description: 'Test category 4',
+			});
+			testCategoryId = category.cid;
+		});
 
 		beforeEach(async () => {
 			// Create a topic with a reply
 			const topicResult = await topics.post({
 				uid: adminUid,
-				cid: 4, // comments-feedback category
+				cid: testCategoryId,
 				title: 'Support Answer Test ' + Date.now(),
 				content: 'Original question',
 			});
+
 			testTid = topicResult.topicData.tid;
 			testPid = topicResult.postData.pid;
 
@@ -775,19 +786,19 @@ describe('TA Resolve Plugin', () => {
 			it('should allow admin to approve answer', async () => {
 				const mockSocket = { uid: adminUid };
 				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
-				assert.strictEqual(result.supportedByInstructor, true);
+				assert.strictEqual(result.supportedByInstructor, 1);
 			});
 
 			it('should allow TA to approve answer', async () => {
 				const mockSocket = { uid: taUid };
 				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
-				assert.strictEqual(result.supportedByInstructor, true);
+				assert.strictEqual(result.supportedByInstructor, 1);
 			});
 
 			it('should allow global moderator to approve answer', async () => {
 				const mockSocket = { uid: globalModUid };
 				const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: replyPid });
-				assert.strictEqual(result.supportedByInstructor, true);
+				assert.strictEqual(result.supportedByInstructor, 1);
 			});
 
 			it('should throw error for invalid post id', async () => {
@@ -844,13 +855,13 @@ describe('TA Resolve Plugin', () => {
 			it('should allow admin to remove approval', async () => {
 				const mockSocket = { uid: adminUid };
 				const result = await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
-				assert.strictEqual(result.supportedByInstructor, false);
+				assert.strictEqual(result.supportedByInstructor, 0);
 			});
 
 			it('should allow TA to remove approval', async () => {
 				const mockSocket = { uid: taUid };
 				const result = await socketPlugins.taResolve.removeSupport(mockSocket, { pid: replyPid });
-				assert.strictEqual(result.supportedByInstructor, false);
+				assert.strictEqual(result.supportedByInstructor, 0);
 			});
 
 			it('should set supportedByInstructor to 0 in database', async () => {
