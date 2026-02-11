@@ -56,6 +56,10 @@
 				<span class="badge bg-danger rounded-1">[[user:banned]]</span>
 				{{{ end }}}
 
+				{{{ if posts.supportedByInstructor }}}
+				<span class="badge bg-success rounded-1">Supported by Instructor</span>
+				{{{ end }}}
+
 				<div class="d-flex gap-1 align-items-center">
 					<span class="text-muted">{generateWrote(@value, config.timeagoCutoff)}</span>
 
@@ -109,6 +113,27 @@
 				{{{ end }}}
 				<div component="post/actions" class="d-flex flex-grow-1 align-items-center justify-content-end gap-1 post-tools">
 					<!-- IMPORT partials/topic/reactions.tpl -->
+
+					<!-- Resolved/Unresolved Status/Button (only in comments and feedback category) -->
+					{{{ if (cid == "4") }}}
+						{{{ if posts.isTA }}}
+							<button component="post/resolve" 
+									class="btn btn-ghost btn-sm resolve-toggle {{{ if posts.isResolved }}}resolved{{{ end }}}" 
+									data-pid="{posts.pid}"
+									data-resolved="{{{ if posts.isResolved }}}true{{{ else }}}false{{{ end }}}"
+									title="{{{ if posts.isResolved }}}[[topic:mark-unresolved]]{{{ else }}}[[topic:mark-resolved]]{{{ end }}}">
+								<i class="fa fa-fw {{{ if posts.isResolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
+								<span class="d-none d-md-inline">{{{ if posts.isResolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
+							</button>
+
+						{{{ else }}}
+							<span class="btn btn-ghost btn-sm" style="cursor: default; opacity: 1;">
+								<i class="fa fa-fw {{{ if posts.isResolved }}}fa-check-circle text-success{{{ else }}}fa-circle-o text-muted{{{ end }}}"></i>
+								<span class="d-none d-md-inline">{{{ if posts.isResolved }}}Resolved{{{ else }}}Unresolved{{{ end }}}</span>
+							</span>
+						{{{ end }}}
+
+					{{{ end }}}
 					<a component="post/reply" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:reply]]"><i class="fa fa-fw fa-reply text-primary"></i></a>
 					<a component="post/quote" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:quote]]"><i class="fa fa-fw fa-quote-right text-primary"></i></a>
 

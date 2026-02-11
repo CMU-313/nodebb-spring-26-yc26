@@ -219,7 +219,6 @@ get:
                         - name
                         - updated
                         - latest
-                        - url
                         - numInstalls
                         - isCompatible
                         - id
@@ -237,8 +236,6 @@ get:
                         description:
                           type: string
                         latest:
-                          type: string
-                        url:
                           type: string
                         numInstalls:
                           type: number
@@ -269,7 +266,6 @@ get:
                         - name
                         - updated
                         - latest
-                        - url
                         - numInstalls
                         - isCompatible
                         - id
@@ -310,7 +306,6 @@ get:
                         - name
                         - updated
                         - latest
-                        - url
                         - numInstalls
                         - isCompatible
                         - id

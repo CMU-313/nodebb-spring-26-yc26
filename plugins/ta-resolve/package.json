@@ -1,0 +1,10 @@
+{
+    "name": "nodebb-plugin-ta-resolve",
+    "version": "0.0.1",
+    "description": "TA plugin to resolve questions",
+    "main": "library.js",
+    "nbbpm": {
+        "compatibility": "^4.0.0"
+    },
+    "dependencies": {}
+}

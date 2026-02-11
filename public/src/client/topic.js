@@ -17,11 +17,12 @@ define('forum/topic', [
 	'alerts',
 	'bootbox',
 	'clipboard',
+	'forum/topic/resolve',
+	'forum/topic/supportAnswer',
 ], function (
 	infinitescroll, threadTools, postTools,
 	events, posts, navigator, sort, quickreply,
-	components, storage, hooks, api, alerts,
-	bootbox, clipboard
+	components, storage, hooks, api, alerts, bootbox, clipboard, Resolve, SupportAnswer
 ) {
 	const Topic = {};
 	let tid = '0';
@@ -69,6 +70,8 @@ define('forum/topic', [
 		setupQuickReply();
 		handleBookmark(tid);
 		handleThumbs();
+		Resolve.init();
+		SupportAnswer.init();
 		addCrosspostsHandler();
 
 		$(window).on('scroll', utils.debounce(updateTopicTitle, 250));

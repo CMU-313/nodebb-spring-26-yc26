@@ -1,0 +1,15 @@
+{
+    "id": "nodebb-plugin-ta-resolve",
+    "name": "TA Resolve & Archive",
+    "description": "Allows TAs to resolve questions and archives them.",
+    "library": "./library.js",
+    "hooks": [
+        { "hook": "filter:topic.create", "method": "setTopicDefault" },
+        { "hook": "filter:topics.get", "method": "appendResolveStatusAndSort" },
+        { "hook": "static:app.load", "method": "init" },
+        { "hook": "filter:topic.get", "method": "appendTAPrivileges" },
+        { "hook": "filter:post.tools", "method": "addSupportAnswerTool" },
+        { "hook": "filter:topics.addPostData", "method": "normalizeSupportedByInstructor" },
+        { "hook": "filter:post.getPostSummaryByPids", "method": "normalizeSupportedByInstructorSummary" }
+    ]
+}
