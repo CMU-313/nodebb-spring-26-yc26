@@ -404,4 +404,112 @@ plugin.normalizeSupportedByInstructorSummary = async function (data) {
     return data;
 };
 
+/**
+ * Hook: filter:post.create
+ * Captures the isAnonymous flag from the frontend and saves it to the DB Post object.
+ */
+plugin.saveAnonymousPost = async function (data) {
+    // 'data.data' is the raw payload from the browser
+    // 'data.post' is the object about to be saved to the database
+    if (data && data.data && data.data.isAnonymous) {
+        data.post.isAnonymous = true;
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:topic.create
+ * Captures the isAnonymous flag for the main Topic object.
+ */
+plugin.saveAnonymousTopic = async function (data) {
+    if (data && data.data && data.data.isAnonymous) {
+        data.topic.isAnonymous = true;
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:posts.get
+ * Obfuscates author details for unauthorized students.
+ */
+plugin.obfuscateAnonymousPosts = async function (data) {
+    const viewerUid = data.uid; // The person viewing the page
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isPrivileged = isAdmin || isGlobalMod || isTA;
+    }
+
+    if (data.posts && Array.isArray(data.posts)) {
+        data.posts.forEach(post => {
+            if (post && post.isAnonymous && post.user) {
+                // Check if the person viewing is the person who wrote it
+                const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
+                
+                if (isPrivileged || isAuthor) {
+                    // Frontend UI will read `post.isAnonymous` and add the label.
+                } else {
+                    // SECURE OBFUSCATION FOR OTHER STUDENTS
+                    post.uid = 0;           
+                    post.user.uid = 0;      
+                    post.user.username = 'Anonymous'; // Specified exactly "Anonymous"
+                    post.user.userslug = '';
+                    post.user.picture = ''; 
+                    post.user['icon:text'] = '?';
+                    post.user['icon:bgColor'] = '#555'; 
+                }
+            }
+        });
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:topics.get
+ * Obfuscates author details on the Category list view.
+ */
+plugin.obfuscateAnonymousTopics = async function (data) {
+    if (!data.topics || !data.topics.length) return data;
+
+    const viewerUid = data.uid;
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isPrivileged = isAdmin || isGlobalMod || isTA;
+    }
+
+    const tids = data.topics.map(t => t.tid);
+    const topicData = await topics.getTopicsFields(tids, ['isAnonymous']);
+
+    data.topics.forEach((topic, index) => {
+        const isAnonymous = topicData[index].isAnonymous;
+        topic.isAnonymous = isAnonymous; // Explicitly pass the flag for UI
+        
+        if (isAnonymous && topic.user) {
+            const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(topic.uid, 10);
+
+            if (isPrivileged || isAuthor) {
+                // Leave data intact for Creator, TA, and Admin
+            } else {
+                // Scrub for non-creator students
+                topic.uid = 0;
+                topic.user.uid = 0;
+                topic.user.username = 'Anonymous';
+                topic.user.userslug = '';
+                topic.user.picture = '';
+                topic.user['icon:text'] = '?';
+                topic.user['icon:bgColor'] = '#555';
+            }
+        }
+    });
+
+    return data;
+};
+
 module.exports = plugin;

@@ -605,6 +605,9 @@ describe('TA Resolve Plugin', () => {
 		});
 	});
 
+	// ==========================================
+	// TEST: Error handling in catch blocks
+	// ==========================================
 	describe('Error handling - catch blocks', () => {
 		let originalIsAdministrator;
 		let originalIsGlobalModerator;
@@ -714,6 +717,133 @@ describe('TA Resolve Plugin', () => {
             
 			// Should return data without throwing
 			assert.ok(result);
+		});
+	});
+
+	// ==========================================
+	// TEST: Anonymous Posting - Save Logic
+	// ==========================================
+	describe('Anonymous Posting - Save Logic', () => {
+		it('should attach isAnonymous flag to new post', async () => {
+			const mockData = {
+				data: { isAnonymous: true },
+				post: { content: 'Hello' },
+			};
+			const result = await taResolve.saveAnonymousPost(mockData);
+			assert.strictEqual(result.post.isAnonymous, true);
+		});
+
+		it('should NOT attach flag if frontend does not send it', async () => {
+			const mockData = {
+				data: {},
+				post: { content: 'Hello' },
+			};
+			const result = await taResolve.saveAnonymousPost(mockData);
+			assert.strictEqual(result.post.isAnonymous, undefined);
+		});
+
+		it('should attach isAnonymous flag to new topic', async () => {
+			const mockData = {
+				data: { isAnonymous: true },
+				topic: { title: 'New Question' },
+			};
+			const result = await taResolve.saveAnonymousTopic(mockData);
+			assert.strictEqual(result.topic.isAnonymous, true);
+		});
+	});
+
+	// ==========================================
+	// TEST: Anonymous Posting - Obfuscation Logic
+	// ==========================================
+	describe('Anonymous Posting - Obfuscation Logic', () => {
+		let testTopicTid;
+		let authorUid;
+		let otherStudentUid;
+
+		beforeEach(async () => {
+			// We need a specific author and a different student to test the views
+			authorUid = studentUid; 
+			otherStudentUid = await user.create({ username: 'other_student', password: 'password123' });
+
+			const result = await topics.post({
+				uid: authorUid,
+				cid: categoryId,
+				title: 'Secret Question',
+				content: 'Do not tell anyone I asked this.',
+			});
+			testTopicTid = result.topicData.tid;
+			await topics.setTopicField(testTopicTid, 'isAnonymous', true);
+		});
+
+		describe('obfuscateAnonymousPosts()', () => {
+			it('should completely scrub author data for a NON-CREATOR student', async () => {
+				const mockData = {
+					uid: otherStudentUid, // A different student is viewing
+					posts: [{
+						isAnonymous: true,
+						uid: authorUid,
+						user: {
+							uid: authorUid,
+							username: 'student_resolve',
+							userslug: 'student-resolve',
+							picture: '/path/to/pic.jpg',
+						},
+					}],
+				};
+
+				const result = await taResolve.obfuscateAnonymousPosts(mockData);
+				const post = result.posts[0];
+
+				assert.strictEqual(post.uid, 0); 
+				assert.strictEqual(post.user.uid, 0);
+				assert.strictEqual(post.user.username, 'Anonymous'); // Updated to match Putt's spec
+				assert.strictEqual(post.user.userslug, '');
+				assert.strictEqual(post.user.picture, '');
+			});
+
+			it('should NOT scrub data for the POST CREATOR', async () => {
+				const mockData = {
+					uid: authorUid, // The author is viewing their own post
+					posts: [{
+						isAnonymous: true,
+						uid: authorUid,
+						user: {
+							uid: authorUid,
+							username: 'student_resolve',
+							picture: '/path/to/pic.jpg',
+						},
+					}],
+				};
+
+				const result = await taResolve.obfuscateAnonymousPosts(mockData);
+				const post = result.posts[0];
+
+				// Data should be completely untouched
+				assert.strictEqual(post.user.uid, authorUid); 
+				assert.strictEqual(post.user.username, 'student_resolve'); 
+				assert.strictEqual(post.user.picture, '/path/to/pic.jpg'); 
+			});
+
+			it('should NOT scrub data for a TA viewing an anonymous post', async () => {
+				const mockData = {
+					uid: taUid, // A TA is viewing the page
+					posts: [{
+						isAnonymous: true,
+						uid: authorUid,
+						user: {
+							uid: authorUid,
+							username: 'student_resolve',
+							picture: '/path/to/pic.jpg',
+						},
+					}],
+				};
+
+				const result = await taResolve.obfuscateAnonymousPosts(mockData);
+				const post = result.posts[0];
+
+				assert.strictEqual(post.user.uid, authorUid); 
+				assert.strictEqual(post.user.username, 'student_resolve'); 
+			});
 		});
 	});
 });
