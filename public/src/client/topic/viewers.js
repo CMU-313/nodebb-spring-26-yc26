@@ -1,6 +1,6 @@
 'use strict';
 
-define('forum/topic/viewers', ['api'], function (api) {
+define('forum/topic/viewers', [], function (api) {
 	const Viewers = {};
 
 	Viewers.init = function () {
