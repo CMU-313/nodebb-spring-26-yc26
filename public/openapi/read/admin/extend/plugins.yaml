@@ -253,6 +253,10 @@ get:
                           type: boolean
                         version:
                           type: string
+                        url:
+                          type: string
+                          format: uri
+                          description: The URL to download the upgraded plugin package
                         license:
                           type: object
                           properties:
