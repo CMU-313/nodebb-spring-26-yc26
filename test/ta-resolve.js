@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const posts = require('../src/posts');
 const db = require('./mocks/databasemock');
 const topics = require('../src/topics');
 const user = require('../src/user');
@@ -262,6 +263,495 @@ describe('TA Resolve Plugin', () => {
 
 			const result = await taResolve.checkIfResolved(data);
 			assert.strictEqual(result, data);
+		});
+	});
+
+
+	// Add this inside your main describe block, after the existing tests:
+
+	// ==========================================
+	// TEST: supportAnswer socket method
+	// ==========================================
+	describe('supportAnswer socket method', () => {
+		const socketPlugins = require('../src/socket.io/plugins');
+		let testPostPid;
+		let testTopicTid;
+
+		beforeEach(async () => {
+			// Create a topic with a reply post
+			const topicResult = await topics.post({
+				uid: studentUid,
+				cid: categoryId,
+				title: 'Support Answer Test ' + Date.now(),
+				content: 'Original post content',
+			});
+			testTopicTid = topicResult.topicData.tid;
+
+			// Create a reply post to test support on
+			const replyResult = await topics.reply({
+				uid: studentUid,
+				tid: testTopicTid,
+				content: 'Student answer to support ' + Date.now(),
+			});
+			testPostPid = replyResult.pid;
+		});
+
+		it('should register supportAnswer socket method', () => {
+			assert.ok(socketPlugins.taResolve.supportAnswer);
+			assert.strictEqual(typeof socketPlugins.taResolve.supportAnswer, 'function');
+		});
+
+		it('should reject unauthenticated users', async () => {
+			const mockSocket = { uid: 0 };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+				assert.fail('Should have thrown error');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:not-logged-in]]');
+			}
+		});
+
+		it('should reject non-admin users', async () => {
+			const mockSocket = { uid: studentUid };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+				assert.fail('Should have thrown error');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:no-privileges]]');
+			}
+		});
+
+		it('should reject TA users (admin only)', async () => {
+			const mockSocket = { uid: taUid };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+				assert.fail('Should have thrown error');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:no-privileges]]');
+			}
+		});
+
+		it('should reject requests without data', async () => {
+			const mockSocket = { uid: adminUid };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, null);
+				assert.fail('Should have thrown error');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:invalid-data]]');
+			}
+		});
+
+		it('should reject requests without pid', async () => {
+			const mockSocket = { uid: adminUid };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, {});
+				assert.fail('Should have thrown error');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:invalid-data]]');
+			}
+		});
+
+		it('should allow admin to support an answer', async () => {
+			const mockSocket = { uid: adminUid };
+			const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+			
+			assert.strictEqual(result.supportedByInstructor, 1);
+		});
+
+		it('should persist supportedByInstructor field in database', async () => {
+			const mockSocket = { uid: adminUid };
+			await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+			
+			const fieldValue = await posts.getPostField(testPostPid, 'supportedByInstructor');
+			assert.strictEqual(parseInt(fieldValue, 10), 1);
+		});
+
+		it('should remove support when remove flag is true', async () => {
+			const mockSocket = { uid: adminUid };
+			
+			// First support the answer
+			await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+			
+			// Then remove support
+			const result = await socketPlugins.taResolve.supportAnswer(mockSocket, { 
+				pid: testPostPid, 
+				remove: true, 
+			});
+			
+			assert.strictEqual(result.supportedByInstructor, 0);
+		});
+
+		it('should persist removal in database', async () => {
+			const mockSocket = { uid: adminUid };
+			
+			// Support then remove
+			await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid });
+			await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: testPostPid, remove: true });
+			
+			const fieldValue = await posts.getPostField(testPostPid, 'supportedByInstructor');
+			assert.strictEqual(parseInt(fieldValue, 10), 0);
+		});
+	});
+
+	// ==========================================
+	// TEST: removeSupport socket method
+	// ==========================================
+	describe('removeSupport socket method', () => {
+		const socketPlugins = require('../src/socket.io/plugins');
+		let testPostPid;
+
+		beforeEach(async () => {
+			const topicResult = await topics.post({
+				uid: studentUid,
+				cid: categoryId,
+				title: 'Remove Support Test ' + Date.now(),
+				content: 'Original post',
+			});
+
+			const replyResult = await topics.reply({
+				uid: studentUid,
+				tid: topicResult.topicData.tid,
+				content: 'Reply to remove support from ' + Date.now(),
+			});
+			testPostPid = replyResult.pid;
+
+			// Pre-support the answer
+			await socketPlugins.taResolve.supportAnswer({ uid: adminUid }, { pid: testPostPid });
+		});
+
+		it('should register removeSupport socket method', () => {
+			assert.ok(socketPlugins.taResolve.removeSupport);
+			assert.strictEqual(typeof socketPlugins.taResolve.removeSupport, 'function');
+		});
+
+		it('should remove support from a supported answer', async () => {
+			const mockSocket = { uid: adminUid };
+			const result = await socketPlugins.taResolve.removeSupport(mockSocket, { pid: testPostPid });
+			
+			assert.strictEqual(result.supportedByInstructor, 0);
+		});
+
+		it('should call supportAnswer with remove: true', async () => {
+			const mockSocket = { uid: adminUid };
+			await socketPlugins.taResolve.removeSupport(mockSocket, { pid: testPostPid });
+			
+			const fieldValue = await posts.getPostField(testPostPid, 'supportedByInstructor');
+			assert.strictEqual(parseInt(fieldValue, 10), 0);
+		});
+	});
+
+	// ==========================================
+	// TEST: addSupportAnswerTool hook
+	// ==========================================
+	describe('addSupportAnswerTool()', () => {
+		let testPostPid;
+
+		beforeEach(async () => {
+			const topicResult = await topics.post({
+				uid: studentUid,
+				cid: categoryId,
+				title: 'Add Tool Test ' + Date.now(),
+				content: 'Original post',
+			});
+
+			const replyResult = await topics.reply({
+				uid: studentUid,
+				tid: topicResult.topicData.tid,
+				content: 'Reply for tool test ' + Date.now(),
+			});
+			testPostPid = replyResult.pid;
+		});
+
+		it('should not add tool for unauthenticated users', async () => {
+			const data = {
+				uid: 0,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			assert.strictEqual(result.tools.length, 0);
+		});
+
+		it('should not add tool for non-admin users', async () => {
+			const data = {
+				uid: studentUid,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			assert.strictEqual(result.tools.length, 0);
+		});
+
+		it('should add "Support Answer" tool for admin on unsupported post', async () => {
+			const data = {
+				uid: adminUid,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			
+			assert.strictEqual(result.tools.length, 1);
+			assert.strictEqual(result.tools[0].action, 'post/support-answer');
+			assert.strictEqual(result.tools[0].html, 'Support Answer');
+		});
+
+		it('should add "Remove support" tool for admin on supported post', async () => {
+			// First support the post
+			await posts.setPostField(testPostPid, 'supportedByInstructor', 1);
+
+			const data = {
+				uid: adminUid,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			
+			assert.strictEqual(result.tools.length, 1);
+			assert.strictEqual(result.tools[0].action, 'post/remove-support');
+			assert.strictEqual(result.tools[0].html, 'Remove support');
+		});
+
+		it('should include correct icon for support action', async () => {
+			const data = {
+				uid: adminUid,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			assert.strictEqual(result.tools[0].icon, 'fa-check-circle');
+		});
+
+		it('should include correct icon for remove support action', async () => {
+			await posts.setPostField(testPostPid, 'supportedByInstructor', 1);
+
+			const data = {
+				uid: adminUid,
+				pid: testPostPid,
+				tools: [],
+			};
+
+			const result = await taResolve.addSupportAnswerTool(data);
+			assert.strictEqual(result.tools[0].icon, 'fa-times-circle');
+		});
+	});
+
+	// ==========================================
+	// TEST: normalizeSupportedByInstructor hook
+	// ==========================================
+	describe('normalizeSupportedByInstructor()', () => {
+		let testPostPid;
+
+		beforeEach(async () => {
+			const topicResult = await topics.post({
+				uid: studentUid,
+				cid: categoryId,
+				title: 'Normalize Test ' + Date.now(),
+				content: 'Original post',
+			});
+
+			const replyResult = await topics.reply({
+				uid: studentUid,
+				tid: topicResult.topicData.tid,
+				content: 'Reply for normalize test ' + Date.now(),
+			});
+			testPostPid = replyResult.pid;
+		});
+
+		it('should return data unchanged if posts is null', async () => {
+			const data = { posts: null };
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts, null);
+		});
+
+		it('should return data unchanged if posts is undefined', async () => {
+			const data = {};
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts, undefined);
+		});
+
+		it('should return data unchanged if posts is not an array', async () => {
+			const data = { posts: 'not an array' };
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts, 'not an array');
+		});
+
+		it('should convert supportedByInstructor 1 to true', async () => {
+			const data = {
+				posts: [{ pid: testPostPid, supportedByInstructor: 1 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+		});
+
+		it('should convert supportedByInstructor 0 to false', async () => {
+			const data = {
+				posts: [{ pid: testPostPid, supportedByInstructor: 0 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, false);
+		});
+
+		it('should convert supportedByInstructor "1" string to true', async () => {
+			const data = {
+				posts: [{ pid: testPostPid, supportedByInstructor: '1' }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+		});
+
+		it('should convert undefined supportedByInstructor to false', async () => {
+			const data = {
+				posts: [{ pid: testPostPid, supportedByInstructor: undefined }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, false);
+		});
+
+		it('should convert null supportedByInstructor to false', async () => {
+			const data = {
+				posts: [{ pid: testPostPid, supportedByInstructor: null }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, false);
+		});
+
+		it('should fetch missing supportedByInstructor from database', async () => {
+			// Set the field in database
+			await posts.setPostField(testPostPid, 'supportedByInstructor', 1);
+
+			// Pass post without the field
+			const data = {
+				posts: [{ pid: testPostPid }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+		});
+
+		it('should handle multiple posts', async () => {
+			const data = {
+				posts: [
+					{ pid: 1, supportedByInstructor: 1 },
+					{ pid: 2, supportedByInstructor: 0 },
+					{ pid: 3, supportedByInstructor: null },
+				],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+			assert.strictEqual(result.posts[1].supportedByInstructor, false);
+			assert.strictEqual(result.posts[2].supportedByInstructor, false);
+		});
+
+		it('should handle null post in array', async () => {
+			const data = {
+				posts: [null, { pid: testPostPid, supportedByInstructor: 1 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructor(data);
+			assert.strictEqual(result.posts[0], null);
+			assert.strictEqual(result.posts[1].supportedByInstructor, true);
+		});
+	});
+
+	describe('undefined branch coverage', () => {
+		const socketPlugins = require('../src/socket.io/plugins');
+
+		it('should handle uid explicitly set to undefined in appendTAPrivileges', async () => {
+			const topicResult = await topics.post({
+				uid: adminUid,
+				cid: categoryId,
+				title: 'Undefined UID Test ' + Date.now(),
+				content: 'Test',
+			});
+
+			const data = {
+				topic: { tid: topicResult.topicData.tid, posts: [] },
+				uid: undefined, // explicitly undefined
+			};
+
+			const result = await taResolve.appendTAPrivileges(data);
+			assert.strictEqual(result.topic.isTA, false);
+		});
+
+		it('should handle data.pid explicitly set to undefined in supportAnswer', async () => {
+			const mockSocket = { uid: adminUid };
+			try {
+				await socketPlugins.taResolve.supportAnswer(mockSocket, { pid: undefined });
+				assert.fail('Should have thrown');
+			} catch (err) {
+				assert.strictEqual(err.message, '[[error:invalid-data]]');
+			}
+		});
+	});
+
+	// ==========================================
+	// TEST: normalizeSupportedByInstructorSummary hook
+	// ==========================================
+	describe('normalizeSupportedByInstructorSummary()', () => {
+		it('should return data unchanged if posts is undefined', async () => {
+			const data = {};
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			assert.strictEqual(result.posts, undefined);
+		});
+
+		it('should return data unchanged if posts is not an array', async () => {
+			const data = { posts: 'not an array' };
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			assert.strictEqual(result.posts, 'not an array');
+		});
+
+		it('should convert supportedByInstructor 1 to true', async () => {
+			const data = {
+				posts: [{ pid: 1, supportedByInstructor: 1 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+		});
+
+		it('should convert supportedByInstructor 0 to false', async () => {
+			const data = {
+				posts: [{ pid: 1, supportedByInstructor: 0 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			assert.strictEqual(result.posts[0].supportedByInstructor, false);
+		});
+
+		it('should handle null post in array', async () => {
+			const data = {
+				posts: [null, { pid: 1, supportedByInstructor: 1 }],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			assert.strictEqual(result.posts[0], null);
+			assert.strictEqual(result.posts[1].supportedByInstructor, true);
+		});
+
+		it('should handle multiple posts', async () => {
+			const data = {
+				posts: [
+					{ pid: 1, supportedByInstructor: 1 },
+					{ pid: 2, supportedByInstructor: 0 },
+				],
+			};
+
+			const result = await taResolve.normalizeSupportedByInstructorSummary(data);
+			
+			assert.strictEqual(result.posts[0].supportedByInstructor, true);
+			assert.strictEqual(result.posts[1].supportedByInstructor, false);
 		});
 	});
 
