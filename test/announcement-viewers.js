@@ -306,6 +306,24 @@ describe('Announcement Viewers Plugin', () => {
 			assert.strictEqual(result.count, 1);
 			assert.strictEqual(result.viewers[0].uid, studentUid);
 		});
+
+		it('should handle deleted users in viewers list', async () => {
+			// First, log a view from a student
+			await socketPlugins.announcementViewers.logView({ uid: studentUid }, { pid: testPostPid });
+
+			// Manually add a fake/deleted user ID to the viewers set
+			const fakeDeletedUid = 999999;
+			await db.sortedSetAdd(`post:${testPostPid}:viewers`, Date.now(), fakeDeletedUid);
+
+			// Now get viewers - should handle the deleted user gracefully
+			const mockSocket = { uid: adminUid };
+			const result = await socketPlugins.announcementViewers.getViewers(mockSocket, { pid: testPostPid });
+
+			// Should only return the valid student, not the deleted user
+			assert.strictEqual(result.count, 1);
+			assert.strictEqual(result.viewers[0].uid, studentUid);
+			// The deleted user (uid 999999) should be filtered out (return null)
+		});
 	});
 
 	// ==========================================
