@@ -3,6 +3,9 @@
     "name": "TA Resolve & Archive",
     "description": "Allows TAs to resolve questions and archives them.",
     "library": "./library.js",
+    "scripts": [
+        "./public/ta-resolve-composer.js"
+    ],
     "hooks": [
         { "hook": "filter:topic.create", "method": "setTopicDefault" },
         { "hook": "filter:post.create", "method": "autoApproveAdminPosts" },
