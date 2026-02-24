@@ -153,6 +153,9 @@ PostObject:
           type: string
     isMainPost:
       type: boolean
+    isAnonymous:
+      type: boolean
+      nullable: true
     replies:
       type: number
     supportedByInstructor:
@@ -207,6 +210,9 @@ PostDataObject:
           type: string
         index:
           type: number
+        isAnonymous:
+          type: boolean
+          nullable: true
         user:
           type: object
           properties:
