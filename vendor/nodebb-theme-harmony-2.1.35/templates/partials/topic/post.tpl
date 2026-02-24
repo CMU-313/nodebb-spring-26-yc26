@@ -134,7 +134,6 @@
 						{{{ end }}}
 
 					{{{ end }}}
-
 					<!-- Viewers Dropdown (Admin/TA only, main post only, announcements only) -->
 					<!-- IF privileges.isAdminOrMod -->
 					<!-- IF @first -->
@@ -163,8 +162,7 @@
 						</ul>
 					</div>
 					<!-- ENDIF @first -->
-					<!-- ENDIF privileges.isAdminOrMod -->
-
+<!-- ENDIF privileges.isAdminOrMod -->
 					<a component="post/reply" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:reply]]"><i class="fa fa-fw fa-reply text-primary"></i></a>
 					<a component="post/quote" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:quote]]"><i class="fa fa-fw fa-quote-right text-primary"></i></a>
 
