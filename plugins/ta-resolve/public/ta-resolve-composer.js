@@ -21,7 +21,20 @@
 		row.find('select').on('change', function () {
 			window.__taResolveComposerAnonymous = this.value === 'anonymous';
 		});
-		$container.find('.composer-body').prepend(row).length || $container.prepend(row);
+
+		const submitContainer = $container.find('[component="composer/submit/container"]').first();
+		if (submitContainer.length) {
+			submitContainer.before(row);
+			return;
+		}
+
+		const actionBar = $container.find('.action-bar').first();
+		if (actionBar.length) {
+			actionBar.prepend(row);
+			return;
+		}
+
+		$container.prepend(row);
 	}
 
 	function injectQuickReplyDropdown() {
@@ -73,10 +86,8 @@
 		}
 		require(['hooks'], function (hooks) {
 			hooks.on('filter:composer.quickreply.data', function (replyData) {
-				if (window.__taResolveQuickReplyAnonymous) {
-					replyData.data = replyData.data || {};
-					replyData.data.isAnonymous = true;
-				}
+				replyData.data = replyData.data || {};
+				replyData.data.isAnonymous = !!window.__taResolveQuickReplyAnonymous;
 				return replyData;
 			});
 
@@ -89,9 +100,8 @@
 				}
 
 				const select = submitData.composerEl.find('[data-component="composer-anonymous-toggle"]');
-				if (select && select.length && select.val() === 'anonymous') {
-					submitData.composerData.isAnonymous = true;
-				}
+				const isAnonymous = !!(select && select.length && select.val() === 'anonymous');
+				submitData.composerData.isAnonymous = isAnonymous;
 
 				return submitData;
 			});

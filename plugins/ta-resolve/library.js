@@ -9,6 +9,10 @@ const socketPlugins = require.main.require('./src/socket.io/plugins');
 
 const plugin = {};
 
+function isAnonymousFlag(value) {
+    return value === true || value === 1 || value === '1' || value === 'true';
+}
+
 /**
  * Task 1: Default questions as unresolved
  * Hook: filter:topic.create
@@ -392,12 +396,39 @@ plugin.normalizeSupportedByInstructor = async function (data) {
  * Normalize supportedByInstructor for summary views (search, recent posts, profile posts).
  */
 plugin.normalizeSupportedByInstructorSummary = async function (data) {
+    const viewerUid = data && data.uid;
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isPrivileged = isAdmin || isTA;
+    }
+
     if (data.posts && Array.isArray(data.posts)) {
         data.posts.forEach((post) => {
             if (post) {
                 post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
                 // Keep the approval tracking fields
                 // supportedByInstructorUid and supportedByInstructorTime are already present if set
+
+                const isAnonymous = isAnonymousFlag(post.isAnonymous);
+                post.isAnonymous = isAnonymous;
+
+                if (isAnonymous && post.user) {
+                    post.user = { ...post.user };
+                    const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
+                    if (!isPrivileged && !isAuthor) {
+                        post.uid = 0;
+                        post.user.uid = 0;
+                        post.user.username = 'Anonymous';
+                        post.user.displayname = 'Anonymous';
+                        post.user.userslug = '';
+                        post.user.picture = '';
+                        post.user['icon:text'] = '?';
+                        post.user['icon:bgColor'] = '#555';
+                    }
+                }
             }
         });
     }
@@ -409,9 +440,13 @@ plugin.normalizeSupportedByInstructorSummary = async function (data) {
  * Captures the isAnonymous flag from the frontend and saves it to the DB Post object.
  */
 plugin.saveAnonymousPost = async function (data) {
-    // 'data.data' is the raw payload from the browser
-    // 'data.post' is the object about to be saved to the database
-    if (data && data.data && data.data.isAnonymous) {
+    const isAnonymous = Boolean(
+        data && data.data && (
+            isAnonymousFlag(data.data.isAnonymous) ||
+            isAnonymousFlag(data.data.data && data.data.data.isAnonymous)
+        )
+    );
+    if (isAnonymous) {
         data.post.isAnonymous = true;
     }
     return data;
@@ -422,7 +457,13 @@ plugin.saveAnonymousPost = async function (data) {
  * Captures the isAnonymous flag for the main Topic object.
  */
 plugin.saveAnonymousTopic = async function (data) {
-    if (data && data.data && data.data.isAnonymous) {
+    const isAnonymous = Boolean(
+        data && data.data && (
+            isAnonymousFlag(data.data.isAnonymous) ||
+            isAnonymousFlag(data.data.data && data.data.data.isAnonymous)
+        )
+    );
+    if (isAnonymous) {
         data.topic.isAnonymous = true;
     }
     return data;
@@ -438,14 +479,19 @@ plugin.obfuscateAnonymousPosts = async function (data) {
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
-        const isGlobalMod = await user.isGlobalModerator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
-        isPrivileged = isAdmin || isGlobalMod || isTA;
+        isPrivileged = isAdmin || isTA;
     }
 
     if (data.posts && Array.isArray(data.posts)) {
         data.posts.forEach(post => {
-            if (post && post.isAnonymous && post.user) {
+            const isAnonymous = post && isAnonymousFlag(post.isAnonymous);
+            if (post) {
+                post.isAnonymous = isAnonymous;
+            }
+
+            if (post && isAnonymous && post.user) {
+                post.user = { ...post.user };
                 // Check if the person viewing is the person who wrote it
                 const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
                 
@@ -456,6 +502,7 @@ plugin.obfuscateAnonymousPosts = async function (data) {
                     post.uid = 0;           
                     post.user.uid = 0;      
                     post.user.username = 'Anonymous'; // Specified exactly "Anonymous"
+                    post.user.displayname = 'Anonymous';
                     post.user.userslug = '';
                     post.user.picture = ''; 
                     post.user['icon:text'] = '?';
@@ -479,19 +526,19 @@ plugin.obfuscateAnonymousTopics = async function (data) {
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
-        const isGlobalMod = await user.isGlobalModerator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
-        isPrivileged = isAdmin || isGlobalMod || isTA;
+        isPrivileged = isAdmin || isTA;
     }
 
     const tids = data.topics.map(t => t.tid);
     const topicData = await topics.getTopicsFields(tids, ['isAnonymous']);
 
     data.topics.forEach((topic, index) => {
-        const isAnonymous = topicData[index].isAnonymous;
+        const isAnonymous = isAnonymousFlag(topicData[index].isAnonymous);
         topic.isAnonymous = isAnonymous; // Explicitly pass the flag for UI
         
         if (isAnonymous && topic.user) {
+            topic.user = { ...topic.user };
             const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(topic.uid, 10);
 
             if (isPrivileged || isAuthor) {
@@ -501,6 +548,7 @@ plugin.obfuscateAnonymousTopics = async function (data) {
                 topic.uid = 0;
                 topic.user.uid = 0;
                 topic.user.username = 'Anonymous';
+                topic.user.displayname = 'Anonymous';
                 topic.user.userslug = '';
                 topic.user.picture = '';
                 topic.user['icon:text'] = '?';

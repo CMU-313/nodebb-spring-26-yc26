@@ -135,14 +135,15 @@ module.exports = function (Topics) {
 			Topics.addParentPosts(postData, uid),
 			parseInt(uid, 10) > 0 ? Promise.all([
 				user.isAdministrator(uid),
-				user.isGlobalModerator(uid),
 				groups.isMember(uid, 'Teaching Assistants'),
-			]).then(([isAdmin, isGlobalMod, isTA]) => isAdmin || isGlobalMod || isTA) : false,
+			]).then(([isAdmin, isTA]) => isAdmin || isTA) : false,
 		]);
 
 		postData.forEach((postObj, i) => {
 			if (postObj) {
-				postObj.user = postObj.uid ? userData[postObj.uid] : { ...userData[postObj.uid] };
+				const isAnonymous = postObj.isAnonymous === true || postObj.isAnonymous === 1 || postObj.isAnonymous === '1' || postObj.isAnonymous === 'true';
+				postObj.isAnonymous = isAnonymous;
+				postObj.user = userData[postObj.uid] ? { ...userData[postObj.uid] } : userData[postObj.uid];
 				postObj.editor = postObj.editor ? editors[postObj.editor] : null;
 				postObj.bookmarked = bookmarks[i];
 				postObj.upvoted = voteData.upvotes[i];
@@ -157,7 +158,7 @@ module.exports = function (Topics) {
 					postObj.user.displayname = postObj.user.username;
 				}
 
-				if (postObj.isAnonymous && postObj.user) {
+				if (isAnonymous && postObj.user) {
 					const isAuthor = parseInt(uid, 10) > 0 && parseInt(uid, 10) === parseInt(postObj.uid, 10);
 					if (!isPrivileged && !isAuthor) {
 						postObj.uid = 0;
