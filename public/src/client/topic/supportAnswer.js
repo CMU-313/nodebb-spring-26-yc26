@@ -4,8 +4,7 @@ define('forum/topic/supportAnswer', [
 	'hooks',
 	'alerts',
 	'components',
-	'api',
-], function (hooks, alerts, components, api) {
+], function (hooks, alerts, components) {
 	const SupportAnswer = {};
 	const BADGE_HTML = '<span class="badge bg-success rounded-1 supported-by-instructor-badge">Supported by Instructor</span>';
 
