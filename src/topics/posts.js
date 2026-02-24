@@ -7,6 +7,7 @@ const nconf = require('nconf');
 
 const db = require('../database');
 const user = require('../user');
+const groups = require('../groups');
 const posts = require('../posts');
 const meta = require('../meta');
 const activitypub = require('../activitypub');
@@ -124,6 +125,7 @@ module.exports = function (Topics) {
 			userData,
 			editors,
 			replies,
+			isPrivileged,
 		] = await Promise.all([
 			posts.hasBookmarked(pids, uid),
 			posts.getVoteStatusByPostIDs(pids, uid),
@@ -131,6 +133,11 @@ module.exports = function (Topics) {
 			getPostUserData('editor', async uids => await user.getUsersFields(uids, ['uid', 'username', 'userslug'])),
 			getPostReplies(postData, uid),
 			Topics.addParentPosts(postData, uid),
+			parseInt(uid, 10) > 0 ? Promise.all([
+				user.isAdministrator(uid),
+				user.isGlobalModerator(uid),
+				groups.isMember(uid, 'Teaching Assistants'),
+			]).then(([isAdmin, isGlobalMod, isTA]) => isAdmin || isGlobalMod || isTA) : false,
 		]);
 
 		postData.forEach((postObj, i) => {
@@ -148,6 +155,20 @@ module.exports = function (Topics) {
 				if (meta.config.allowGuestHandles && postObj.uid === 0 && postObj.handle) {
 					postObj.user.username = validator.escape(String(postObj.handle));
 					postObj.user.displayname = postObj.user.username;
+				}
+
+				if (postObj.isAnonymous && postObj.user) {
+					const isAuthor = parseInt(uid, 10) > 0 && parseInt(uid, 10) === parseInt(postObj.uid, 10);
+					if (!isPrivileged && !isAuthor) {
+						postObj.uid = 0;
+						postObj.user.uid = 0;
+						postObj.user.username = 'Anonymous';
+						postObj.user.displayname = 'Anonymous';
+						postObj.user.userslug = '';
+						postObj.user.picture = '';
+						postObj.user['icon:text'] = '?';
+						postObj.user['icon:bgColor'] = '#555';
+					}
 				}
 			}
 		});
