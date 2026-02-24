@@ -4,7 +4,17 @@ define('forum/topic/viewers', [], function () {
 	const Viewers = {};
 
 	Viewers.init = function () {
-		// Only for admins/mods
+		// Track when current user views posts (if they're a student)
+		// This must come BEFORE the admin check so students can log views
+		if (!app.user.isAdmin && !app.user.isGlobalMod && app.user.uid) {
+			// Only track in announcements category (cid = 1)
+			const cid = ajaxify.data.cid;
+			if (cid === 1) {
+				trackPostView();
+			}
+		}
+
+		// Only show viewer dropdown for admins/mods
 		if (!app.user.isAdmin && !app.user.isGlobalMod) {
 			return;
 		}
@@ -30,11 +40,6 @@ define('forum/topic/viewers', [], function () {
 
 			loadViewers(pid, $dropdown, $content);
 		});
-
-		// Track when current user views posts (if they're a student)
-		if (!app.user.isAdmin && !app.user.isGlobalMod && app.user.uid) {
-			trackPostView();
-		}
 	};
 
 	function loadViewers(pid, $dropdown, $content) {
