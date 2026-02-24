@@ -125,6 +125,7 @@ module.exports = function (Topics) {
 			userData,
 			editors,
 			replies,
+			isAdminViewer,
 			isPrivileged,
 		] = await Promise.all([
 			posts.hasBookmarked(pids, uid),
@@ -133,6 +134,7 @@ module.exports = function (Topics) {
 			getPostUserData('editor', async uids => await user.getUsersFields(uids, ['uid', 'username', 'userslug'])),
 			getPostReplies(postData, uid),
 			Topics.addParentPosts(postData, uid),
+			parseInt(uid, 10) > 0 ? user.isAdministrator(uid) : false,
 			parseInt(uid, 10) > 0 ? Promise.all([
 				user.isAdministrator(uid),
 				groups.isMember(uid, 'Teaching Assistants'),
@@ -142,7 +144,7 @@ module.exports = function (Topics) {
 		postData.forEach((postObj, i) => {
 			if (postObj) {
 				const isAnonymous = postObj.isAnonymous === true || postObj.isAnonymous === 1 || postObj.isAnonymous === '1' || postObj.isAnonymous === 'true';
-				postObj.isAnonymous = isAnonymous;
+				postObj.isAnonymous = isAdminViewer ? false : isAnonymous;
 				postObj.user = userData[postObj.uid] ? { ...userData[postObj.uid] } : userData[postObj.uid];
 				postObj.editor = postObj.editor ? editors[postObj.editor] : null;
 				postObj.bookmarked = bookmarks[i];

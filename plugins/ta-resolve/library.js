@@ -397,11 +397,13 @@ plugin.normalizeSupportedByInstructor = async function (data) {
  */
 plugin.normalizeSupportedByInstructorSummary = async function (data) {
     const viewerUid = data && data.uid;
+    let isAdminViewer = false;
     let isPrivileged = false;
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin;
         isPrivileged = isAdmin || isTA;
     }
 
@@ -413,9 +415,9 @@ plugin.normalizeSupportedByInstructorSummary = async function (data) {
                 // supportedByInstructorUid and supportedByInstructorTime are already present if set
 
                 const isAnonymous = isAnonymousFlag(post.isAnonymous);
-                post.isAnonymous = isAnonymous;
+                post.isAnonymous = isAdminViewer ? false : isAnonymous;
 
-                if (isAnonymous && post.user) {
+                if (!isAdminViewer && isAnonymous && post.user) {
                     post.user = { ...post.user };
                     const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
                     if (!isPrivileged && !isAuthor) {
@@ -475,11 +477,13 @@ plugin.saveAnonymousTopic = async function (data) {
  */
 plugin.obfuscateAnonymousPosts = async function (data) {
     const viewerUid = data.uid; // The person viewing the page
+    let isAdminViewer = false;
     let isPrivileged = false;
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin;
         isPrivileged = isAdmin || isTA;
     }
 
@@ -487,10 +491,10 @@ plugin.obfuscateAnonymousPosts = async function (data) {
         data.posts.forEach(post => {
             const isAnonymous = post && isAnonymousFlag(post.isAnonymous);
             if (post) {
-                post.isAnonymous = isAnonymous;
+                post.isAnonymous = isAdminViewer ? false : isAnonymous;
             }
 
-            if (post && isAnonymous && post.user) {
+            if (!isAdminViewer && post && isAnonymous && post.user) {
                 post.user = { ...post.user };
                 // Check if the person viewing is the person who wrote it
                 const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
@@ -522,11 +526,13 @@ plugin.obfuscateAnonymousTopics = async function (data) {
     if (!data.topics || !data.topics.length) return data;
 
     const viewerUid = data.uid;
+    let isAdminViewer = false;
     let isPrivileged = false;
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin;
         isPrivileged = isAdmin || isTA;
     }
 
@@ -535,9 +541,9 @@ plugin.obfuscateAnonymousTopics = async function (data) {
 
     data.topics.forEach((topic, index) => {
         const isAnonymous = isAnonymousFlag(topicData[index].isAnonymous);
-        topic.isAnonymous = isAnonymous; // Explicitly pass the flag for UI
+        topic.isAnonymous = isAdminViewer ? false : isAnonymous; // Explicitly pass the flag for UI
         
-        if (isAnonymous && topic.user) {
+        if (!isAdminViewer && isAnonymous && topic.user) {
             topic.user = { ...topic.user };
             const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(topic.uid, 10);
 
