@@ -21,7 +21,7 @@ define('forum/topic/viewers', [], function () {
 
 		// Only show in announcements category (cid = 1)
 		const cid = ajaxify.data.cid;
-		if (cid !== 1) {
+		if (cid !== '1') {
 			$('[component="post/viewers-dropdown"]').remove();
 			return;
 		}
