@@ -4,13 +4,20 @@ define('forum/topic/viewers', [], function () {
 	const Viewers = {};
 
 	Viewers.init = function () {
-		// Only for admins/mods
-		if (!app.user.isAdmin && !app.user.isGlobalMod) {
+		const isStaff = app.user.isAdmin || app.user.isGlobalMod;
+		const cid = ajaxify.data.cid;
+
+		// Track when current user views posts (students only)
+		if (!isStaff && app.user.uid) {
+			trackPostView();
+		}
+
+		// Dropdown viewer list is only for staff in the announcements category
+		if (!isStaff) {
 			return;
 		}
 
 		// Only show in announcements category (cid = 1)
-		const cid = ajaxify.data.cid;
 		if (cid !== 1) {
 			$('[component="post/viewers-dropdown"]').remove();
 			return;
@@ -30,11 +37,6 @@ define('forum/topic/viewers', [], function () {
 
 			loadViewers(pid, $dropdown, $content);
 		});
-
-		// Track when current user views posts (if they're a student)
-		if (!app.user.isAdmin && !app.user.isGlobalMod && app.user.uid) {
-			trackPostView();
-		}
 	};
 
 	function loadViewers(pid, $dropdown, $content) {
