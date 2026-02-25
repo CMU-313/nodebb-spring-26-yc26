@@ -27,19 +27,21 @@ define('forum/topic/viewers', [], function () {
 		}
 
 		// Load viewers when dropdown is opened
-		$(document).on('shown.bs.dropdown', '[component="post/viewers-toggle"]', function () {
-			const $btn = $(this);
-			const $dropdown = $btn.closest('[component="post/viewers-dropdown"]');
-			const $content = $dropdown.find('[component="post/viewers-content"]');
-			const pid = $btn.attr('data-pid');
+		$(document)
+			.off('shown.bs.dropdown.viewers', '[component="post/viewers-toggle"]')
+			.on('shown.bs.dropdown.viewers', '[component="post/viewers-toggle"]', function () {
+				const $btn = $(this);
+				const $dropdown = $btn.closest('[component="post/viewers-dropdown"]');
+				const $content = $dropdown.find('[component="post/viewers-content"]');
+				const pid = $btn.attr('data-pid');
 
-			// Only load once
-			if ($dropdown.attr('data-loaded') === 'true') {
-				return;
-			}
+				// Only load once
+				if ($dropdown.attr('data-loaded') === 'true') {
+					return;
+				}
 
-			loadViewers(pid, $dropdown, $content);
-		});
+				loadViewers(pid, $dropdown, $content);
+			});
 	};
 
 	function loadViewers(pid, $dropdown, $content) {
