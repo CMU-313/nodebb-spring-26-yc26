@@ -1,5 +1,8 @@
 'use strict';
 
+const winston = require('winston');
+const validator = require('validator');
+
 const db = require.main.require('./src/database');
 const topics = require.main.require('./src/topics');
 const posts = require.main.require('./src/posts');
@@ -11,6 +14,10 @@ const plugin = {};
 
 function isAnonymousFlag(value) {
     return value === true || value === 1 || value === '1' || value === 'true';
+}
+
+function isSupportedFlag(value) {
+    return value === true || value === 1 || value === '1';
 }
 
 /**
@@ -49,7 +56,7 @@ plugin.autoApproveAdminPosts = async function (data) {
         }
     } catch (err) {
         // Log error but don't fail the post creation
-        console.error('[TA-Resolve] Error auto-approving admin post:', err.message);
+        winston.error('[TA-Resolve] Error auto-approving admin post:', err.stack || err.message);
     }
     
     return data;
@@ -125,7 +132,7 @@ plugin.init = async function (params) {
             // Create notification with template formatting
             const notifData = {
                 type: 'post-approved',
-                bodyShort: `<strong>${approverName}</strong> marked your post as Supported by Instructor in <strong>${topicTitle}</strong>.`,
+                bodyShort: `<strong>${validator.escape(String(approverName))}</strong> marked your post as Supported by Instructor in <strong>${validator.escape(String(topicTitle))}</strong>.`,
                 bodyLong: '',
                 nid: `approval:${data.pid}:${socket.uid}`,
                 pid: data.pid,
@@ -384,7 +391,7 @@ plugin.normalizeSupportedByInstructor = async function (data) {
     // Normalize boolean values for the template
     data.posts.forEach((post) => {
         if (post) {
-            post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+            post.supportedByInstructor = isSupportedFlag(post.supportedByInstructor);
         }
     });
     
@@ -402,15 +409,17 @@ plugin.normalizeSupportedByInstructorSummary = async function (data) {
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
-        isAdminViewer = isAdmin;
-        isPrivileged = isAdmin || isTA;
+        isAdminViewer = isAdmin || isGlobalMod;
+        isPrivileged = isAdmin || isGlobalMod || isTA;
     }
 
     if (data.posts && Array.isArray(data.posts)) {
         data.posts.forEach((post) => {
             if (post) {
-                post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+                const raw = post.supportedByInstructor;
+                post.supportedByInstructor = isSupportedFlag(raw);
                 // Keep the approval tracking fields
                 // supportedByInstructorUid and supportedByInstructorTime are already present if set
 
@@ -482,9 +491,10 @@ plugin.obfuscateAnonymousPosts = async function (data) {
 
     if (viewerUid) {
         const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
         const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
-        isAdminViewer = isAdmin;
-        isPrivileged = isAdmin || isTA;
+        isAdminViewer = isAdmin || isGlobalMod;
+        isPrivileged = isAdmin || isGlobalMod || isTA;
     }
 
     if (data.posts && Array.isArray(data.posts)) {

@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-	window.__taResolveComposerAnonymous = false;
 	window.__taResolveQuickReplyAnonymous = false;
 
 	function injectFullComposerDropdown(container) {
@@ -114,7 +113,6 @@
 			});
 
 			hooks.on('action:composer.enhance', function (data) {
-				window.__taResolveComposerAnonymous = false;
 				if (data && data.container) {
 					injectFullComposerDropdown(data.container);
 				}
