@@ -4,23 +4,20 @@ define('forum/topic/viewers', [], function () {
 	const Viewers = {};
 
 	Viewers.init = function () {
-		// Track when current user views posts (if they're a student)
-		// This must come BEFORE the admin check so students can log views
-		if (!app.user.isAdmin && !app.user.isGlobalMod && app.user.uid) {
-			// Only track in announcements category (cid = 1)
-			const cid = ajaxify.data.cid;
-			if (cid === 1) {
-				trackPostView();
-			}
+		const isStaff = app.user.isAdmin || app.user.isGlobalMod;
+		const cid = ajaxify.data.cid;
+
+		// Track when current user views posts (students only)
+		if (!isStaff && app.user.uid) {
+			trackPostView();
 		}
 
-		// Only show viewer dropdown for admins/mods
-		if (!app.user.isAdmin && !app.user.isGlobalMod) {
+		// Dropdown viewer list is only for staff in the announcements category
+		if (!isStaff) {
 			return;
 		}
 
 		// Only show in announcements category (cid = 1)
-		const cid = ajaxify.data.cid;
 		if (cid !== 1) {
 			$('[component="post/viewers-dropdown"]').remove();
 			return;
