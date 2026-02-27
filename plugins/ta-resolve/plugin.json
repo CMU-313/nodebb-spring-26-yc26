@@ -19,7 +19,7 @@
         { "hook": "filter:post.create", "method": "saveAnonymousPost" },
         { "hook": "filter:topic.create", "method": "saveAnonymousTopic" },
 
-        { "hook": "filter:posts.get", "method": "obfuscateAnonymousPosts" },
+        { "hook": "filter:post.getPosts", "method": "obfuscateAnonymousPosts" },
         { "hook": "filter:topics.get", "method": "obfuscateAnonymousTopics" }
     ]
 }
