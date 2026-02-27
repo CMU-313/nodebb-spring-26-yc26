@@ -366,97 +366,97 @@ describe('Frontend: viewers.js', () => {
 	// accurately documents the current behaviour of the code.
 	// =========================================================================
 	describe('trackPostView()', () => {
-        it('emits logView with the correct mainPid for a student', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.ok(call, 'logView should be emitted for students');
-            assert.strictEqual(call.data.pid, 42);
-        });
+		it('emits logView with the correct mainPid for a student', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.ok(call, 'logView should be emitted for students');
+			assert.strictEqual(call.data.pid, 42);
+		});
 
-        it('does NOT emit logView when mainPid is undefined', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: undefined },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.strictEqual(call, undefined);
-        });
+		it('does NOT emit logView when mainPid is undefined', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: undefined },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.strictEqual(call, undefined);
+		});
 
-        it('does NOT emit logView when mainPid is 0', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: 0 },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.strictEqual(call, undefined);
-        });
+		it('does NOT emit logView when mainPid is 0', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: 0 },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.strictEqual(call, undefined);
+		});
 
-        it('does NOT emit logView for admin', () => {
-            const env = createEnv({
-                user: { isAdmin: true, isGlobalMod: false, uid: 1 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.strictEqual(call, undefined);
-        });
+		it('does NOT emit logView for admin', () => {
+			const env = createEnv({
+				user: { isAdmin: true, isGlobalMod: false, uid: 1 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.strictEqual(call, undefined);
+		});
 
-        it('does NOT emit logView for globalMod', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: true, uid: 2 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.strictEqual(call, undefined);
-        });
+		it('does NOT emit logView for globalMod', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: true, uid: 2 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.strictEqual(call, undefined);
+		});
 
-        it('does NOT emit logView for guest (uid 0)', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 0 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
-            assert.strictEqual(call, undefined);
-        });
+		it('does NOT emit logView for guest (uid 0)', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 0 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			const call = env.socket.calls.find(c => c.event === 'plugins.announcementViewers.logView');
+			assert.strictEqual(call, undefined);
+		});
 
-        it('logs success when view is logged', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            env.socket.respondTo('plugins.announcementViewers.logView', null, { logged: true });
-            assert.ok(env.logs.some(l => l.includes('View logged successfully')));
-        });
+		it('logs success when view is logged', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			env.socket.respondTo('plugins.announcementViewers.logView', null, { logged: true });
+			assert.ok(env.logs.some(l => l.includes('View logged successfully')));
+		});
 
-        it('logs reason when view is not logged', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            env.socket.respondTo('plugins.announcementViewers.logView', null, { logged: false, reason: 'already-viewed' });
-            assert.ok(env.logs.some(l => l.includes('already-viewed')));
-        });
+		it('logs reason when view is not logged', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			env.socket.respondTo('plugins.announcementViewers.logView', null, { logged: false, reason: 'already-viewed' });
+			assert.ok(env.logs.some(l => l.includes('already-viewed')));
+		});
 
-        it('logs error when socket fails', () => {
-            const env = createEnv({
-                user: { isAdmin: false, isGlobalMod: false, uid: 50 },
-                ajaxify: { cid: 1, mainPid: 42 },
-            });
-            env.Viewers.init();
-            env.socket.respondTo('plugins.announcementViewers.logView', new Error('timeout'), null);
-            assert.ok(env.errors.some(e => e.includes('Error logging view')));
-        });
-    });
+		it('logs error when socket fails', () => {
+			const env = createEnv({
+				user: { isAdmin: false, isGlobalMod: false, uid: 50 },
+				ajaxify: { cid: 1, mainPid: 42 },
+			});
+			env.Viewers.init();
+			env.socket.respondTo('plugins.announcementViewers.logView', new Error('timeout'), null);
+			assert.ok(env.errors.some(e => e.includes('Error logging view')));
+		});
+	});
 
 	// =========================================================================
 	// loadViewers() — driven by dropdown open
