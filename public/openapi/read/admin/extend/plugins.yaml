@@ -237,6 +237,10 @@ get:
                           type: string
                         latest:
                           type: string
+                        url:
+                          type: string
+                          format: uri
+                          description: The URL to download the upgraded plugin package
                         numInstalls:
                           type: number
                         isCompatible:

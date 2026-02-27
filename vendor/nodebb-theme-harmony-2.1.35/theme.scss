@@ -1,1 +1,17 @@
 @import "./scss/harmony";
+
+// Viewers dropdown styling
+[component="post/viewers-dropdown"] {
+	.viewer-item {
+		transition: background-color 0.2s;
+		border-radius: 4px;
+		
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.05);
+		}
+	}
+	
+	.dropdown-menu {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	}
+}

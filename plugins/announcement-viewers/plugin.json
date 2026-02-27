@@ -1,0 +1,10 @@
+{
+    "id": "nodebb-plugin-announcement-viewers",
+    "name": "Announcement Viewers",
+    "description": "Allows TAs/Admins to see which students viewed announcements",
+    "library": "./library.js",
+    "hooks": [
+        { "hook": "static:app.load", "method": "init" },
+        { "hook": "filter:topic.get", "method": "appendViewerPrivileges" }
+    ]
+}
