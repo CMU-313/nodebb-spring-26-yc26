@@ -54,7 +54,7 @@ define('quickreply', [
 		});
 
 		let ready = true;
-		components.get('topic/quickreply/button').on('click', function (e) {
+		components.get('topic/quickreply/button').on('click', async function (e) {
 			e.preventDefault();
 			if (!ready) {
 				return;
@@ -73,9 +73,22 @@ define('quickreply', [
 				return alerts.error('[[error:content-too-long, ' + config.maximumPostLength + ']]');
 			}
 
+			let payload = replyData;
+			try {
+				const hookData = await hooks.fire('filter:composer.quickreply.data', {
+					data: replyData,
+					container: components.get('topic/quickreply/container'),
+				});
+				if (hookData && hookData.data) {
+					payload = hookData.data;
+				}
+			} catch (err) {
+				return alerts.error(err);
+			}
+
 			ready = false;
 			element.val('');
-			api.post(`/topics/${ajaxify.data.tid}`, replyData, function (err, data) {
+			api.post(`/topics/${ajaxify.data.tid}`, payload, function (err, data) {
 				ready = true;
 				if (err) {
 					element.val(replyMsg);

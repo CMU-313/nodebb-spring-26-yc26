@@ -1,5 +1,8 @@
 'use strict';
 
+const winston = require('winston');
+const validator = require('validator');
+
 const db = require.main.require('./src/database');
 const topics = require.main.require('./src/topics');
 const posts = require.main.require('./src/posts');
@@ -8,6 +11,14 @@ const groups = require.main.require('./src/groups'); // Import groups module
 const socketPlugins = require.main.require('./src/socket.io/plugins');
 
 const plugin = {};
+
+function isAnonymousFlag(value) {
+    return value === true || value === 1 || value === '1' || value === 'true';
+}
+
+function isSupportedFlag(value) {
+    return value === true || value === 1 || value === '1';
+}
 
 /**
  * Task 1: Default questions as unresolved
@@ -18,6 +29,36 @@ plugin.setTopicDefault = async function (data) {
     // console.log('[TA-Resolve] setTopicDefault called for topic:', data.topic.tid);
     data.topic.isResolved = 0;
     // console.log('[TA-Resolve] Set isResolved to 0 for topic:', data.topic.tid);
+    return data;
+};
+
+/**
+ * Auto-approve posts created by admins
+ * Hook: filter:post.create
+ */
+plugin.autoApproveAdminPosts = async function (data) {
+    if (!data.post || !data.post.uid) {
+        return data;
+    }
+    
+    try {
+        const isAdmin = await user.isAdministrator(data.post.uid);
+        if (isAdmin) {
+            // Auto-approve the post
+            await posts.setPostField(data.post.pid, 'supportedByInstructor', 1);
+            await posts.setPostField(data.post.pid, 'supportedByInstructorUid', data.post.uid);
+            await posts.setPostField(data.post.pid, 'supportedByInstructorTime', Date.now());
+            
+            // Update the data object so the frontend sees this
+            data.post.supportedByInstructor = 1;
+            data.post.supportedByInstructorUid = data.post.uid;
+            data.post.supportedByInstructorTime = Date.now();
+        }
+    } catch (err) {
+        // Log error but don't fail the post creation
+        winston.error('[TA-Resolve] Error auto-approving admin post:', err.stack || err.message);
+    }
+    
     return data;
 };
 
@@ -73,8 +114,49 @@ plugin.init = async function (params) {
             throw new Error('[[error:invalid-data]]');
         }
         const value = data.remove ? 0 : 1;
+        const postData = await posts.getPostData(data.pid);
+        
+        // Set the approval status
         await posts.setPostField(data.pid, 'supportedByInstructor', value);
-        return { supportedByInstructor: value };
+        
+        // Track the approver and timestamp
+        if (value === 1) {
+            await posts.setPostField(data.pid, 'supportedByInstructorUid', socket.uid);
+            await posts.setPostField(data.pid, 'supportedByInstructorTime', Date.now());
+            
+            // Send notification to post author
+            const notifications = require.main.require('./src/notifications');
+            const topicTitle = (await topics.getTopicField(postData.tid, 'title')) || '';
+            const approverName = await user.getUserField(socket.uid, 'username');
+            
+            // Create notification with template formatting
+            const notifData = {
+                type: 'post-approved',
+                bodyShort: `<strong>${validator.escape(String(approverName))}</strong> marked your post as Supported by Instructor in <strong>${validator.escape(String(topicTitle))}</strong>.`,
+                bodyLong: '',
+                nid: `approval:${data.pid}:${socket.uid}`,
+                pid: data.pid,
+                tid: postData.tid,
+                from: socket.uid,
+                to: postData.uid,
+                path: `/post/${data.pid}`,
+            };
+            
+            const createdNotif = await notifications.create(notifData);
+            if (createdNotif) {
+                await notifications.push(createdNotif, [postData.uid]);
+            }
+        } else {
+            // Clear the approver info when removing support
+            await posts.setPostField(data.pid, 'supportedByInstructorUid', null);
+            await posts.setPostField(data.pid, 'supportedByInstructorTime', null);
+        }
+        
+        return { 
+            supportedByInstructor: value,
+            supportedByInstructorUid: value ? socket.uid : null,
+            supportedByInstructorTime: value ? Date.now() : null,
+        };
     };
 
     // Remove support: same socket, pass remove: true
@@ -119,72 +201,61 @@ plugin.checkIfResolved = async function (data) {
  */
 plugin.appendResolveStatusAndSort = async function (data) {
     try {
-        // Logs for debugging
-        // console.log('[TA-Resolve] appendResolveStatusAndSort called, topics count:', data.topics ? data.topics.length : 0);
-        
-        if (!data.topics || !data.topics.length) {
-            // Logs for debugging
-            // console.log('[TA-Resolve] No topics to process');
+        if (!data.topics || !Array.isArray(data.topics) || !data.topics.length) {
             return data;
         }
 
         // Fetch isResolved status for all topics in the view
-        const tids = data.topics.map(t => t.tid);
+        const tids = data.topics.map(t => t && t.tid).filter(Boolean);
+        if (!tids.length) {
+            return data;
+        }
+
         const status = await topics.getTopicsFields(tids, ['isResolved']);
-        // Logs for debugging
-        // console.log('[TA-Resolve] Fetched isResolved status:', status);
         
         // Merge status into the result
         data.topics.forEach((topic, index) => {
-            topic.isResolved = parseInt(status[index].isResolved, 10) === 1;
-            // Logs for debugging
-            // console.log('[TA-Resolve] Topic', topic.tid, 'isResolved:', topic.isResolved);
+            if (topic && status[index]) {
+                topic.isResolved = parseInt(status[index].isResolved, 10) === 1;
+            }
         });
 
-        // NOW SORT IF: topics are in category 4 AND user is staff
-        // Get the category ID from the first topic (they should all be the same in a category view)
-        const cid = parseInt(data.topics[0].cid, 10);
-        
-        if (cid === 4 && data.uid) {
-            // Logs for debugging
-            // console.log('[TA-Resolve] Is category 4 and user logged in, checking permissions');
+        // OPTIONAL: Sort only if explicitly in category 4 AND user is staff
+        // Check safely before accessing first element
+        if (data.topics.length > 0 && data.topics[0] && data.topics[0].cid) {
+            const cid = parseInt(data.topics[0].cid, 10);
             
-            try {
-                const isAdmin = await user.isAdministrator(data.uid);
-                const isGlobalMod = await user.isGlobalModerator(data.uid);
-                const isTA = await groups.isMember(data.uid, 'Teaching Assistants');
-                // Logs for debugging
-                // console.log('[TA-Resolve] isAdmin:', isAdmin, 'isGlobalMod:', isGlobalMod, 'isTA:', isTA);
+            if (cid === 4 && data.uid && parseInt(data.uid, 10) > 0) {
+                try {
+                    const isAdmin = await user.isAdministrator(data.uid);
+                    const isGlobalMod = await user.isGlobalModerator(data.uid);
+                    const isTA = await groups.isMember(data.uid, 'Teaching Assistants');
 
-                if (isAdmin || isGlobalMod || isTA) {
-                    // Logs for debugging
-                    // console.log('[TA-Resolve] User is staff - sorting unresolved first');
-                    const unresolved = [];
-                    const resolved = [];
+                    if (isAdmin || isGlobalMod || isTA) {
+                        const unresolved = [];
+                        const resolved = [];
 
-                    data.topics.forEach((topic) => {
-                        if (topic.isResolved) {
-                            resolved.push(topic);
-                        } else {
-                            unresolved.push(topic);
+                        data.topics.forEach((topic) => {
+                            if (topic && topic.isResolved) {
+                                resolved.push(topic);
+                            } else if (topic) {
+                                unresolved.push(topic);
+                            }
+                        });
+                        
+                        // Only reassign if we actually have items
+                        if (unresolved.length > 0 || resolved.length > 0) {
+                            data.topics = unresolved.concat(resolved);
                         }
-                    });
-                    
-                    // Logs for debugging
-                    // console.log('[TA-Resolve] Final sort: unresolved count:', unresolved.length, 'resolved count:', resolved.length);
-                    data.topics = unresolved.concat(resolved);
+                    }
+                } catch (permErr) {
+                    // Silently continue without sorting if permission check fails
                 }
-            } catch (permErr) {
-                // Logs for debugging
-                // console.error('[TA-Resolve] Error checking permissions:', permErr.message);
-                // Continue without sorting if permission check fails
             }
         }
 
         return data;
     } catch (err) {
-        // Logs for debugging
-        // console.error('[TA-Resolve] Error in appendResolveStatusAndSort:', err.message);
         // Return data unmodified if anything fails
         return data;
     }
@@ -246,30 +317,35 @@ plugin.appendTAPrivileges = async function (data) {
  * Add "Support Answer" and "Remove support" to the three-dots menu for admins.
  */
 plugin.addSupportAnswerTool = async function (data) {
-    if (!data.uid) {
-        return data;
-    }
-    const isAdmin = await user.isAdministrator(data.uid);
-    if (!isAdmin) {
-        return data;
-    }
-    const supported = await posts.getPostField(data.pid, 'supportedByInstructor');
-    const isSupported = parseInt(supported, 10) === 1;
+    try {
+        if (!data.uid || !data.pid) {
+            return data;
+        }
+        const isAdmin = await user.isAdministrator(data.uid);
+        if (!isAdmin) {
+            return data;
+        }
+        const supported = await posts.getPostField(data.pid, 'supportedByInstructor');
+        const isSupported = parseInt(supported, 10) === 1;
 
-    if (!isSupported) {
-        data.tools.push({
-            action: 'post/support-answer',
-            icon: 'fa-check-circle',
-            html: 'Support Answer',
-        });
-    } else {
-        data.tools.push({
-            action: 'post/remove-support',
-            icon: 'fa-times-circle',
-            html: 'Remove support',
-        });
+        if (!isSupported) {
+            data.tools.push({
+                action: 'post/support-answer',
+                icon: 'fa-check-circle',
+                html: 'Support Answer',
+            });
+        } else {
+            data.tools.push({
+                action: 'post/remove-support',
+                icon: 'fa-times-circle',
+                html: 'Remove support',
+            });
+        }
+        return data;
+    } catch (err) {
+        // Silently fail and return data unmodified
+        return data;
     }
-    return data;
 };
 
 /**
@@ -282,29 +358,43 @@ plugin.normalizeSupportedByInstructor = async function (data) {
     if (!data.posts || !Array.isArray(data.posts)) {
         return data;
     }
+    
+    // Collect pids that are missing the fields we need
     const pidsMissing = [];
     data.posts.forEach((post) => {
-        if (post && !post.hasOwnProperty('supportedByInstructor')) {
+        if (post && (!post.hasOwnProperty('supportedByInstructor') || 
+                     !post.hasOwnProperty('supportedByInstructorUid') ||
+                     !post.hasOwnProperty('supportedByInstructorTime'))) {
             pidsMissing.push(post.pid);
         }
     });
+    
     if (pidsMissing.length > 0) {
-        const fetched = await posts.getPostsFields(pidsMissing, ['supportedByInstructor']);
+        const fetched = await posts.getPostsFields(pidsMissing, [
+            'supportedByInstructor', 
+            'supportedByInstructorUid', 
+            'supportedByInstructorTime'
+        ]);
         const pidToValue = {};
         pidsMissing.forEach((pid, i) => {
-            pidToValue[String(pid)] = fetched[i] ? fetched[i].supportedByInstructor : undefined;
+            pidToValue[String(pid)] = fetched[i] || {};
         });
         data.posts.forEach((post) => {
             if (post && pidToValue.hasOwnProperty(String(post.pid))) {
-                post.supportedByInstructor = pidToValue[String(post.pid)];
+                post.supportedByInstructor = parseInt(pidToValue[String(post.pid)].supportedByInstructor, 10) === 1;
+                post.supportedByInstructorUid = pidToValue[String(post.pid)].supportedByInstructorUid;
+                post.supportedByInstructorTime = pidToValue[String(post.pid)].supportedByInstructorTime;
             }
         });
     }
+    
+    // Normalize boolean values for the template
     data.posts.forEach((post) => {
         if (post) {
-            post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+            post.supportedByInstructor = isSupportedFlag(post.supportedByInstructor);
         }
     });
+    
     return data;
 };
 
@@ -313,13 +403,176 @@ plugin.normalizeSupportedByInstructor = async function (data) {
  * Normalize supportedByInstructor for summary views (search, recent posts, profile posts).
  */
 plugin.normalizeSupportedByInstructorSummary = async function (data) {
+    const viewerUid = data && data.uid;
+    let isAdminViewer = false;
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin || isGlobalMod;
+        isPrivileged = isAdmin || isGlobalMod || isTA;
+    }
+
     if (data.posts && Array.isArray(data.posts)) {
         data.posts.forEach((post) => {
             if (post) {
-                post.supportedByInstructor = parseInt(post.supportedByInstructor, 10) === 1;
+                const raw = post.supportedByInstructor;
+                post.supportedByInstructor = isSupportedFlag(raw);
+                // Keep the approval tracking fields
+                // supportedByInstructorUid and supportedByInstructorTime are already present if set
+
+                const isAnonymous = isAnonymousFlag(post.isAnonymous);
+                post.isAnonymous = isAdminViewer ? false : isAnonymous;
+
+                if (!isAdminViewer && isAnonymous && post.user) {
+                    post.user = { ...post.user };
+                    const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
+                    if (!isPrivileged && !isAuthor) {
+                        post.uid = 0;
+                        post.user.uid = 0;
+                        post.user.username = 'Anonymous';
+                        post.user.displayname = 'Anonymous';
+                        post.user.userslug = '';
+                        post.user.picture = '';
+                        post.user['icon:text'] = '?';
+                        post.user['icon:bgColor'] = '#555';
+                    }
+                }
             }
         });
     }
+    return data;
+};
+
+/**
+ * Hook: filter:post.create
+ * Captures the isAnonymous flag from the frontend and saves it to the DB Post object.
+ */
+plugin.saveAnonymousPost = async function (data) {
+    const isAnonymous = Boolean(
+        data && data.data && (
+            isAnonymousFlag(data.data.isAnonymous) ||
+            isAnonymousFlag(data.data.data && data.data.data.isAnonymous)
+        )
+    );
+    if (isAnonymous) {
+        data.post.isAnonymous = true;
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:topic.create
+ * Captures the isAnonymous flag for the main Topic object.
+ */
+plugin.saveAnonymousTopic = async function (data) {
+    const isAnonymous = Boolean(
+        data && data.data && (
+            isAnonymousFlag(data.data.isAnonymous) ||
+            isAnonymousFlag(data.data.data && data.data.data.isAnonymous)
+        )
+    );
+    if (isAnonymous) {
+        data.topic.isAnonymous = true;
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:posts.get
+ * Obfuscates author details for unauthorized students.
+ */
+plugin.obfuscateAnonymousPosts = async function (data) {
+    const viewerUid = data.uid; // The person viewing the page
+    let isAdminViewer = false;
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isGlobalMod = await user.isGlobalModerator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin || isGlobalMod;
+        isPrivileged = isAdmin || isGlobalMod || isTA;
+    }
+
+    if (data.posts && Array.isArray(data.posts)) {
+        data.posts.forEach(post => {
+            const isAnonymous = post && isAnonymousFlag(post.isAnonymous);
+            if (post) {
+                post.isAnonymous = isAdminViewer ? false : isAnonymous;
+            }
+
+            if (!isAdminViewer && post && isAnonymous && post.user) {
+                post.user = { ...post.user };
+                // Check if the person viewing is the person who wrote it
+                const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(post.uid, 10);
+                
+                if (isPrivileged || isAuthor) {
+                    // Frontend UI will read `post.isAnonymous` and add the label.
+                } else {
+                    // SECURE OBFUSCATION FOR OTHER STUDENTS
+                    post.uid = 0;           
+                    post.user.uid = 0;      
+                    post.user.username = 'Anonymous'; // Specified exactly "Anonymous"
+                    post.user.displayname = 'Anonymous';
+                    post.user.userslug = '';
+                    post.user.picture = ''; 
+                    post.user['icon:text'] = '?';
+                    post.user['icon:bgColor'] = '#555'; 
+                }
+            }
+        });
+    }
+    return data;
+};
+
+/**
+ * Hook: filter:topics.get
+ * Obfuscates author details on the Category list view.
+ */
+plugin.obfuscateAnonymousTopics = async function (data) {
+    if (!data.topics || !data.topics.length) return data;
+
+    const viewerUid = data.uid;
+    let isAdminViewer = false;
+    let isPrivileged = false;
+
+    if (viewerUid) {
+        const isAdmin = await user.isAdministrator(viewerUid);
+        const isTA = await groups.isMember(viewerUid, 'Teaching Assistants');
+        isAdminViewer = isAdmin;
+        isPrivileged = isAdmin || isTA;
+    }
+
+    const tids = data.topics.map(t => t.tid);
+    const topicData = await topics.getTopicsFields(tids, ['isAnonymous']);
+
+    data.topics.forEach((topic, index) => {
+        const isAnonymous = isAnonymousFlag(topicData[index].isAnonymous);
+        topic.isAnonymous = isAdminViewer ? false : isAnonymous; // Explicitly pass the flag for UI
+        
+        if (!isAdminViewer && isAnonymous && topic.user) {
+            topic.user = { ...topic.user };
+            const isAuthor = viewerUid && parseInt(viewerUid, 10) === parseInt(topic.uid, 10);
+
+            if (isPrivileged || isAuthor) {
+                // Leave data intact for Creator, TA, and Admin
+            } else {
+                // Scrub for non-creator students
+                topic.uid = 0;
+                topic.user.uid = 0;
+                topic.user.username = 'Anonymous';
+                topic.user.displayname = 'Anonymous';
+                topic.user.userslug = '';
+                topic.user.picture = '';
+                topic.user['icon:text'] = '?';
+                topic.user['icon:bgColor'] = '#555';
+            }
+        }
+    });
+
     return data;
 };
 

@@ -7,6 +7,7 @@ const nconf = require('nconf');
 
 const db = require('../database');
 const user = require('../user');
+const groups = require('../groups');
 const posts = require('../posts');
 const meta = require('../meta');
 const activitypub = require('../activitypub');
@@ -118,24 +119,32 @@ module.exports = function (Topics) {
 			const userData = await method(uids);
 			return _.zipObject(uids, userData);
 		}
+		const addParentPostsPromise = Topics.addParentPosts(postData, uid);
 		const [
 			bookmarks,
 			voteData,
 			userData,
 			editors,
 			replies,
+			[isAdminViewer, isPrivileged],
 		] = await Promise.all([
 			posts.hasBookmarked(pids, uid),
 			posts.getVoteStatusByPostIDs(pids, uid),
 			getPostUserData('uid', async uids => await posts.getUserInfoForPosts(uids, uid)),
 			getPostUserData('editor', async uids => await user.getUsersFields(uids, ['uid', 'username', 'userslug'])),
 			getPostReplies(postData, uid),
-			Topics.addParentPosts(postData, uid),
+			parseInt(uid, 10) > 0 ? Promise.all([
+				user.isAdministrator(uid),
+				groups.isMember(uid, 'Teaching Assistants'),
+			]).then(([isAdmin, isTA]) => [isAdmin, isAdmin || isTA]) : [false, false],
 		]);
+		await addParentPostsPromise;
 
 		postData.forEach((postObj, i) => {
 			if (postObj) {
-				postObj.user = postObj.uid ? userData[postObj.uid] : { ...userData[postObj.uid] };
+				const isAnonymous = postObj.isAnonymous === true || postObj.isAnonymous === 1 || postObj.isAnonymous === '1' || postObj.isAnonymous === 'true';
+				postObj.isAnonymous = isAdminViewer ? false : isAnonymous;
+				postObj.user = userData[postObj.uid] ? { ...userData[postObj.uid] } : userData[postObj.uid];
 				postObj.editor = postObj.editor ? editors[postObj.editor] : null;
 				postObj.bookmarked = bookmarks[i];
 				postObj.upvoted = voteData.upvotes[i];
@@ -148,6 +157,20 @@ module.exports = function (Topics) {
 				if (meta.config.allowGuestHandles && postObj.uid === 0 && postObj.handle) {
 					postObj.user.username = validator.escape(String(postObj.handle));
 					postObj.user.displayname = postObj.user.username;
+				}
+
+				if (isAnonymous && postObj.user) {
+					const isAuthor = parseInt(uid, 10) > 0 && parseInt(uid, 10) === parseInt(postObj.uid, 10);
+					if (!isPrivileged && !isAuthor) {
+						postObj.uid = 0;
+						postObj.user.uid = 0;
+						postObj.user.username = 'Anonymous';
+						postObj.user.displayname = 'Anonymous';
+						postObj.user.userslug = '';
+						postObj.user.picture = '';
+						postObj.user['icon:text'] = '?';
+						postObj.user['icon:bgColor'] = '#555';
+					}
 				}
 			}
 		});

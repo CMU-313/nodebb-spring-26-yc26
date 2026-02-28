@@ -153,12 +153,23 @@ PostObject:
           type: string
     isMainPost:
       type: boolean
+    isAnonymous:
+      type: boolean
+      nullable: true
     replies:
       type: number
     supportedByInstructor:
       type: boolean
       nullable: true
       description: Whether the post has been marked as supported by an instructor.
+    supportedByInstructorUid:
+      type: number
+      nullable: true
+      description: The UID of the user who marked the post as supported by an instructor.
+    supportedByInstructorTime:
+      type: number
+      nullable: true
+      description: The timestamp when the post was marked as supported by an instructor.
 PostDataObject:
   description: The output as returned from `Posts.getPostsData`
   allOf:
@@ -199,6 +210,9 @@ PostDataObject:
           type: string
         index:
           type: number
+        isAnonymous:
+          type: boolean
+          nullable: true
         user:
           type: object
           properties:
