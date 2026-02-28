@@ -119,27 +119,26 @@ module.exports = function (Topics) {
 			const userData = await method(uids);
 			return _.zipObject(uids, userData);
 		}
+		const addParentPostsPromise = Topics.addParentPosts(postData, uid);
 		const [
 			bookmarks,
 			voteData,
 			userData,
 			editors,
 			replies,
-			isAdminViewer,
-			isPrivileged,
+			[isAdminViewer, isPrivileged],
 		] = await Promise.all([
 			posts.hasBookmarked(pids, uid),
 			posts.getVoteStatusByPostIDs(pids, uid),
 			getPostUserData('uid', async uids => await posts.getUserInfoForPosts(uids, uid)),
 			getPostUserData('editor', async uids => await user.getUsersFields(uids, ['uid', 'username', 'userslug'])),
 			getPostReplies(postData, uid),
-			Topics.addParentPosts(postData, uid),
-			parseInt(uid, 10) > 0 ? user.isAdministrator(uid) : false,
 			parseInt(uid, 10) > 0 ? Promise.all([
 				user.isAdministrator(uid),
 				groups.isMember(uid, 'Teaching Assistants'),
-			]).then(([isAdmin, isTA]) => isAdmin || isTA) : false,
+			]).then(([isAdmin, isTA]) => [isAdmin, isAdmin || isTA]) : [false, false],
 		]);
+		await addParentPostsPromise;
 
 		postData.forEach((postObj, i) => {
 			if (postObj) {
