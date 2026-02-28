@@ -16,6 +16,7 @@ if (!isExplicitlyEnabled) {
 		'Set MAKE_ANON_SCRIPT=1 (or MAKE_ANON_SCRIPT=true) or pass --allow-make-anon on the command line.'
 	);
 	process.exit(1);
+}
 const readline = require('readline');
 
 async function confirmAction(topicId, postId) {
