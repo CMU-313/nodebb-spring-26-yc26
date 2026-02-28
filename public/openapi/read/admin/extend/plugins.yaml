@@ -239,6 +239,11 @@ get:
                           type: string
                         url:
                           type: string
+<<<<<<< u4-frontend
+=======
+                          format: uri
+                          description: The URL to download the upgraded plugin package
+>>>>>>> main
                         numInstalls:
                           type: number
                         isCompatible:

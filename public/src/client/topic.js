@@ -19,10 +19,11 @@ define('forum/topic', [
 	'clipboard',
 	'forum/topic/resolve',
 	'forum/topic/supportAnswer',
+	'forum/topic/viewers',
 ], function (
 	infinitescroll, threadTools, postTools,
 	events, posts, navigator, sort, quickreply,
-	components, storage, hooks, api, alerts, bootbox, clipboard, Resolve, SupportAnswer
+	components, storage, hooks, api, alerts, bootbox, clipboard, Resolve, SupportAnswer, Viewers
 ) {
 	const Topic = {};
 	let tid = '0';
@@ -72,6 +73,7 @@ define('forum/topic', [
 		handleThumbs();
 		Resolve.init();
 		SupportAnswer.init();
+		Viewers.init();
 		addCrosspostsHandler();
 
 		$(window).on('scroll', utils.debounce(updateTopicTitle, 250));
