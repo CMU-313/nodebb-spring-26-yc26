@@ -134,6 +134,35 @@
 						{{{ end }}}
 
 					{{{ end }}}
+					<!-- Viewers Dropdown (Admin/TA only, main post only, announcements only) -->
+					<!-- IF privileges.isAdminOrMod -->
+					<!-- IF @first -->
+					<div class="dropdown" component="post/viewers-dropdown" data-cid="{cid}">
+						<button class="btn btn-ghost btn-sm dropdown-toggle" 
+								component="post/viewers-toggle" 
+								data-bs-toggle="dropdown" 
+								data-pid="{posts.pid}"
+								title="View who has seen this announcement">
+							<i class="fa fa-fw fa-eye text-primary"></i>
+							<span class="d-none d-md-inline" component="post/viewer-count">0 views</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end p-2" 
+							component="post/viewers-list" 
+							style="min-width: 280px; max-height: 400px; overflow-y: auto;">
+							<li class="dropdown-header px-2">
+								<i class="fa fa-eye me-1"></i>
+								Viewed by:
+							</li>
+							<li><hr class="dropdown-divider my-1"></li>
+							<div component="post/viewers-content">
+								<li class="px-3 py-2 text-muted text-xs text-center">
+									<i class="fa fa-spinner fa-spin"></i> Loading...
+								</li>
+							</div>
+						</ul>
+					</div>
+					<!-- ENDIF @first -->
+<!-- ENDIF privileges.isAdminOrMod -->
 					<a component="post/reply" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:reply]]"><i class="fa fa-fw fa-reply text-primary"></i></a>
 					<a component="post/quote" href="#" class="btn btn-ghost btn-sm {{{ if !privileges.topics:reply }}}hidden{{{ end }}}" title="[[topic:quote]]"><i class="fa fa-fw fa-quote-right text-primary"></i></a>
 
