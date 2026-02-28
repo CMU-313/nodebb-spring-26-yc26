@@ -29,7 +29,6 @@ export default defineConfig([
 			'test/files/',
 			'*.min.js',
 			'install/docker/',
-			'.archiver_shadow/',
 		],
 	},
 	// tests
