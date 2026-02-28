@@ -34,6 +34,9 @@ describe('Post\'s', () => {
 	let cid;
 
 	before(async () => {
+		meta.config.initialPostDelay = 0;
+		meta.config.postDelay = 0;
+		meta.config.newbiePostDelay = 0;
 		voterUid = await user.create({ username: 'upvoter' });
 		voteeUid = await user.create({ username: 'upvotee' });
 		globalModUid = await user.create({ username: 'globalmod', password: 'globalmodpwd' });

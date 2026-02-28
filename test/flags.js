@@ -30,6 +30,9 @@ describe('Flags', () => {
 	let csrfToken;
 	let category;
 	before(async () => {
+		Meta.config.initialPostDelay = 0;
+		Meta.config.postDelay = 0;
+		Meta.config.newbiePostDelay = 0;
 		const dummyEmailerHook = async (data) => {};
 		// Attach an emailer hook so related requests do not error
 		plugins.hooks.register('flags-test', {
@@ -46,6 +49,9 @@ describe('Flags', () => {
 		category = await Categories.create({
 			name: 'test category',
 		});
+		Meta.config.initialPostDelay = 0;
+		Meta.config.postDelay = 0;
+		Meta.config.newbiePostDelay = 0;
 		await Topics.post({
 			cid: category.cid,
 			uid: uid1,
@@ -1058,6 +1064,9 @@ describe('Flags', () => {
 			const noteTime = Date.now();
 
 			before(async () => {
+				Meta.config.initialPostDelay = 0;
+				Meta.config.postDelay = 0;
+				Meta.config.newbiePostDelay = 0;
 				uid = await User.create({ username: 'flags-access-control', password: 'abcdef' });
 				({ jar, csrf_token } = await helpers.loginUser('flags-access-control', 'abcdef'));
 				console.log('cs', csrfToken);
@@ -1070,6 +1079,9 @@ describe('Flags', () => {
 				await Groups.leave('Global Moderators', uid);
 				await Privileges.categories.rescind(['moderate'], 1, [uid]);
 
+				Meta.config.initialPostDelay = 0;
+				Meta.config.postDelay = 0;
+				Meta.config.newbiePostDelay = 0;
 				const { postData } = await Topics.post({
 					uid,
 					cid: 1,
