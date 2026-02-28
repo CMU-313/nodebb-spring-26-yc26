@@ -16,8 +16,6 @@ if (!isExplicitlyEnabled) {
 		'Set MAKE_ANON_SCRIPT=1 (or MAKE_ANON_SCRIPT=true) or pass --allow-make-anon on the command line.'
 	);
 	process.exit(1);
-}
-
 const readline = require('readline');
 
 async function confirmAction(topicId, postId) {
@@ -41,10 +39,9 @@ db.init(async function (err) {
 		process.exit(1);
 	}
 
-	const args = process.argv.slice(2).filter(a => a !== '--allow-make-anon');
+	const args = process.argv.slice(2);
 	if (args.length < 2) {
-		console.error('Usage: MAKE_ANON_SCRIPT=1 node make-anon.js <topicId> <postId>\n' +
-			'       node make-anon.js <topicId> <postId> --allow-make-anon');
+		console.error('Usage: node make-anon.js <topicId> <postId>');
 		process.exit(1);
 	}
 
@@ -61,7 +58,6 @@ db.init(async function (err) {
 		console.log('Aborted: no changes were made.');
 		process.exit(0);
 	}
-
 	await db.setObjectField(`topic:${topicId}`, 'isAnonymous', true);
 	await db.setObjectField(`post:${postId}`, 'isAnonymous', true);
 
