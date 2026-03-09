@@ -1,5 +1,5 @@
 {
-    "url": "http://0.0.0.0:4567",
+    "url": "http://17313-team09.s3d.cmu.edu:4567",
     "secret": "d1d17b11-96bb-4f8f-96f7-04ecd1175001",
     "database": "redis",
     "port": "4567",
