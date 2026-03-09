@@ -6,7 +6,7 @@ services:
     build: .
     # image: ghcr.io/nodebb/nodebb:latest
     restart: unless-stopped
-    enivronment:
+    environment:
       - START_BUILD=true
     ports:
       - '4567:4567' # comment this out if you don't want to expose NodeBB to the host, or change the first number to any port you want
