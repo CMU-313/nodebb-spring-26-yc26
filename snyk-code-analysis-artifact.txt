@@ -1,0 +1,1259 @@
+
+Testing /workspaces/nodebb-spring-26-yc26 ...
+
+Open Issues
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 873cc8b3-ce64-4106-87cd-a98e6af6fc0a
+   Path: src/controllers/well-known.js, line 21
+   Info: The type of this object, coming from query and the value of its length property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 52c366f9-0200-4d7a-8fe5-e3d374ff511b
+   Path: src/middleware/assert.js, line 92
+   Info: The type of this object, coming from body and the value of its slice property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 8a6cc105-5a48-42bb-b04f-cb358741cd18
+   Path: src/middleware/assert.js, line 111
+   Info: The type of this object, coming from body and the value of its trim property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: f5177d4b-8994-459a-8261-c68ed40d6e15
+   Path: src/controllers/write/users.js, line 204
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 9f5f4a6e-4799-4c16-ac6f-adc4f5d534b4
+   Path: src/image.js, line 148
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 62e28e91-0878-4d8c-8e0f-a4a5b655e22a
+   Path: src/posts/uploads.js, line 23
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: d0e521ee-6e27-4ab0-9bc6-f874a597b18d
+   Path: src/upgrades/1.10.0/hash_recent_ip_addresses.js, line 26
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 55fb34b4-ab4b-45d6-96c2-3f19596cd3bb
+   Path: src/upgrades/1.19.3/fix_user_uploads_zset.js, line 8
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 4b780ee9-b41a-4309-bdbc-ac813323b0f1
+   Path: src/upgrades/1.19.3/rename_post_upload_hashes.js, line 10
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: ac06b8c9-98c8-4554-880d-e5811a2c6e33
+   Path: src/upgrades/1.6.0/clear-stale-digest-template.js, line 16
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 898c720a-721c-4a1c-8376-be4c90923b28
+   Path: src/upgrades/4.3.0/normalize_thumbs_uploads.js, line 28
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: bb12201a-e542-428b-9be4-9c4a534e8701
+   Path: src/user/uploads.js, line 13
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: a5ad7907-89dd-4424-a94a-05b5d7863922
+   Path: src/upgrades/1.19.3/rename_post_upload_hashes.js, line 41
+   Info: MD5 hash (used in md5) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: 1bc498c1-3c34-4bfe-83a3-0e3489e0c516
+   Path: src/upgrades/1.19.3/rename_post_upload_hashes.js, line 42
+   Info: MD5 hash (used in md5) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: bb0242dd-8fb4-4a63-85d6-d5cde5d0cfbe
+   Path: test/posts/uploads.js, line 136
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Use of Password Hash With Insufficient Computational Effort
+   Finding ID: e6d72aa8-0a65-4bce-ba14-f1d8cc776d0e
+   Path: test/user/uploads.js, line 17
+   Info: crypto.createHash hash (used in crypto.createHash) is insecure. Consider changing it to a secure hashing algorithm.
+
+ ✗ [LOW] Insecure TLS Configuration
+   Finding ID: 0ce5f216-14d6-4a05-9953-c194d87fedf8
+   Path: test/socket.io.js, line 6
+   Info: Setting the 'NODE_TLS_REJECT_UNAUTHORIZED' to '0' makes TLS connections and HTTPS requests insecure.
+
+ ✗ [LOW] Insufficient postMessage Validation
+   Finding ID: 6bfa1c0e-9573-428c-9d0b-6ef9e890f302
+   Path: public/src/app.js, line 359
+   Info: The origin of the received message is not checked. This means any site (even malicious) can send message to this window. If you don't expect this, consider checking the origin of sender.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 10da25e6-a9bb-4296-a6bd-ad8347794371
+   Path: test/authentication.js, line 30
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 350f1f69-ced2-4fd2-95b0-7bf90666ed33
+   Path: test/authentication.js, line 53
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: f304ab8f-5614-4ed8-aae7-4bd6f3c61856
+   Path: test/authentication.js, line 105
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: e100a4d6-ae77-45f3-8128-11449243f8ce
+   Path: test/authentication.js, line 276
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 2725ed8c-1da0-4476-a22b-b71cbbdcae51
+   Path: test/authentication.js, line 340
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 83170ece-5962-407c-8dcf-36c0ef8774cc
+   Path: test/authentication.js, line 350
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 8420a55b-4d7b-401b-8f44-80e53f1c795d
+   Path: test/authentication.js, line 359
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: ad1cce5e-1374-4306-9630-7c0f618eced5
+   Path: test/authentication.js, line 360
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 1a623fe8-6606-4cc0-9f98-99c963c51fe6
+   Path: test/authentication.js, line 385
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: f8b92c65-5c4d-48bb-9d80-0f39b06e4d39
+   Path: test/controllers-admin.js, line 39
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 0d6eb22f-a259-4caf-af50-41ca622c2e0d
+   Path: test/controllers-admin.js, line 45
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: a2dc1475-5b60-4581-b1dd-1a7f1a51f856
+   Path: test/flags.js, line 41
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 159a28da-f2ae-4e56-9055-8dfb16e84890
+   Path: test/flags.js, line 43
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 29ddc914-cb86-4db6-9a7e-e7c5a977884c
+   Path: test/flags.js, line 57
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 00ef67cf-673f-459d-8272-8ce2a4fe5cba
+   Path: test/flags.js, line 61
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 94df8895-5844-4452-9093-95c139c20949
+   Path: test/flags.js, line 1061
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: c1c2fc80-3122-4779-975a-c61cd4720d87
+   Path: test/flags.js, line 1064
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 3c75e881-72f9-4d86-9ead-dfc75247483b
+   Path: test/messaging.js, line 59
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: c178a5b4-f92a-439c-9028-d479131b192f
+   Path: test/messaging.js, line 60
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 979de8e2-00c1-4396-964d-98a4e51603d4
+   Path: test/meta.js, line 24
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: a698320e-8a9f-4d64-a172-b86c3d88d730
+   Path: test/meta.js, line 25
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 8d3ee244-b8d8-4269-8120-7a0e916a7181
+   Path: test/posts.js, line 39
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 58349737-3450-4a0c-bcc4-e2df425fd9b0
+   Path: test/posts/uploads.js, line 38
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 3053f7f4-f686-43a1-be6a-f42b6816c114
+   Path: test/posts/uploads.js, line 321
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: f930a82a-d7ff-46cd-bdca-db40fdf7deb5
+   Path: test/socket.io.js, line 34
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 13e30a6f-a536-4696-aff6-49759bab6f1f
+   Path: test/socket.io.js, line 35
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 68a53bbc-cbb0-4667-b5d4-0a202e6f6a07
+   Path: test/socket.io.js, line 702
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 8f12d929-c60b-4c3a-a393-cfb779800bd8
+   Path: test/ta-resolve.js, line 1287
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 1f3caab5-8675-43c9-846d-2365baab87d4
+   Path: test/ta-resolve.js, line 1435
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: b323ac92-8a24-47c8-bca8-65b5a1d355a0
+   Path: test/ta-resolve.js, line 1480
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 8ef9e477-a910-4e37-b0a1-8d9de21d2389
+   Path: test/uploads.js, line 50
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 5d339771-790f-4f09-a38d-f3d2f51afa1f
+   Path: test/uploads.js, line 53
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 5767bde5-bef1-49af-8470-8548f4d4b687
+   Path: test/user.js, line 65
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: ec79d333-611c-464a-a571-70de98496801
+   Path: test/user.js, line 819
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 1c124a24-2253-4c7c-ac11-42cf3b7bde1d
+   Path: test/user.js, line 830
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: cba4b967-2db2-4967-b1ed-96ce58165ac8
+   Path: test/user.js, line 842
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: d4ecd753-990b-40c5-94be-541a1c0b484b
+   Path: test/user.js, line 852
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 29a4be91-d090-41ff-92e5-b8132c323e52
+   Path: test/user.js, line 1581
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 19e59889-3bbd-4eea-9ba9-0124c9e3ae8b
+   Path: test/user.js, line 1633
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 6435466d-583e-44dd-997c-9790991245a4
+   Path: test/user/emails.js, line 146
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: d233443d-1716-4425-bb37-d97cb636d275
+   Path: test/user/emails.js, line 153
+   Info: Do not hardcode passwords in code. Found hardcoded password used in password.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: f2d98b0d-5f83-48e3-8985-aaed85c011af
+   Path: src/controllers/well-known.js, line 21
+   Info: The type of this object, coming from query and the value of its slice property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: d5b2cd54-bd40-4906-a4d7-7263d1e8d643
+   Path: src/controllers/authentication.js, line 105
+   Info: The type of this object, coming from body and the value of its length property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 64cbec34-9c80-4fa7-888d-f66a7721f365
+   Path: src/controllers/authentication.js, line 97
+   Info: The type of this object, coming from body and the value of its length property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: ecdc031f-6fb4-4812-90e2-7a2e36dce1e2
+   Path: src/controllers/authentication.js, line 91
+   Info: The type of this object, coming from body and the value of its length property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: eb5b6ee1-0fab-4633-ae42-811414883d8f
+   Path: test/user.js, line 801
+   Info: Do not hardcode passwords in code. Found hardcoded password used in newPassword.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 8b37da2c-a603-46ab-a342-7176a545e845
+   Path: test/user.js, line 822
+   Info: Do not hardcode passwords in code. Found hardcoded password used in newPassword.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: fd20f036-39b7-49f5-8097-da4f6fb8f4f6
+   Path: test/user.js, line 834
+   Info: Do not hardcode passwords in code. Found hardcoded password used in newPassword.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 3dd1d9a2-9097-44b3-bea8-6126d2d379a9
+   Path: test/user.js, line 846
+   Info: Do not hardcode passwords in code. Found hardcoded password used in newPassword.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 640ec223-56ef-4193-9fbb-444e4242f5e9
+   Path: test/user.js, line 856
+   Info: Do not hardcode passwords in code. Found hardcoded password used in newPassword.
+
+ ✗ [LOW] Use of Hardcoded Passwords
+   Finding ID: 922197f5-fc5a-46dc-b681-6b4263c81699
+   Path: test/user.js, line 856
+   Info: Do not hardcode passwords in code. Found hardcoded password used in currentPassword.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: dd9e769b-3a92-416a-90a2-5c46665b362f
+   Path: src/controllers/admin/users.js, line 267
+   Info: The type of this object, coming from query and the value of its forEach property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 489c9bfd-f408-4008-a904-a548316e96f4
+   Path: src/controllers/admin/users.js, line 62
+   Info: The type of this object, coming from query and the value of its includes property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 8a7f8f4e-1f89-42ad-8750-ffe1cd595fcd
+   Path: src/controllers/admin/users.js, line 59
+   Info: The type of this object, coming from query and the value of its includes property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 1d68c4dc-726b-483e-a138-aacde4ffa405
+   Path: src/controllers/admin/users.js, line 56
+   Info: The type of this object, coming from query and the value of its includes property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 1a9f5f90-72cb-479d-9c7c-ec5cce1cb177
+   Path: src/controllers/unread.js, line 84
+   Info: The type of this object, coming from query and the value of its filter property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 38f5a3b7-cbc0-45d8-9118-3f86614506b8
+   Path: src/controllers/unread.js, line 19
+   Info: The type of this object, coming from query and the value of its filter property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 39fdd45e-944e-4fec-8230-aa6cc68ac31c
+   Path: src/controllers/recent.js, line 29
+   Info: The type of this object, coming from query and the value of its filter property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 9a93f05c-bfe6-4f92-bad4-575fd984c898
+   Path: src/controllers/accounts/notifications.js, line 31
+   Info: The type of this object, coming from query and the value of its filter property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Improper Type Validation
+   Finding ID: 55f77fe5-3c51-41cb-a18f-a54e0dc2bb4c
+   Path: src/activitypub/inbox.js, line 706
+   Info: The type of this object, coming from body and the value of its map property can be controlled by the user. An attacker may craft the properties of the object to crash the application or bypass its logic. Consider checking the type of the object.
+
+ ✗ [LOW] Sensitive Cookie in HTTPS Session Without 'Secure' Attribute
+   Finding ID: e754a4e5-e03b-43c8-93fd-3afcab120462
+   Path: src/webserver.js, line 178
+   Info: Cookie misses the Secure attribute (it is false by default). Set it to true to protect the cookie from man-in-the-middle attacks.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 98a7c633-5deb-4fd1-8731-ea88cfe9318d
+   Path: src/controllers/admin/groups.js, line 33
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 66ade610-f89b-44d8-9f14-b0df4e90cb13
+   Path: src/controllers/groups.js, line 131
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b37504d5-fb37-4bcb-a6ac-bd545dc3fb26
+   Path: src/controllers/accounts/groups.js, line 13
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 97ea8511-eb79-4d8f-b869-596539578211
+   Path: src/controllers/accounts/info.js, line 10
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ee8511fa-ba9a-457e-92db-7763f1442419
+   Path: src/controllers/accounts/notifications.js, line 10
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b67c4f8e-d0bc-454c-a2b3-282c97c2e39d
+   Path: src/controllers/accounts/posts.js, line 160
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: fe268512-d8e2-4844-b09b-efd60c597009
+   Path: src/controllers/accounts/posts.js, line 164
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 6853bb07-8be9-48ca-be95-52de923649c0
+   Path: src/controllers/accounts/posts.js, line 168
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 6cad1dd3-243c-401a-8f34-34165d152a04
+   Path: src/controllers/accounts/posts.js, line 172
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9db5dc2e-a23e-4280-88b8-9986726391e8
+   Path: src/controllers/accounts/posts.js, line 176
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 4df55388-799b-4f49-8b0d-533dfb2c03ee
+   Path: src/controllers/accounts/posts.js, line 180
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: dd9e9bdf-4072-4723-b293-9fd52b840dca
+   Path: src/controllers/accounts/posts.js, line 184
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 3bd99e96-147c-4db7-ae73-9d28d5f22587
+   Path: src/controllers/accounts/posts.js, line 188
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 78805381-8ced-4741-8110-227433e4bc9d
+   Path: src/controllers/accounts/posts.js, line 192
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: cc714eaa-4b1a-4830-b105-13d2f392e8ae
+   Path: src/controllers/accounts/posts.js, line 196
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 60518252-330b-414d-b533-d7b4ae584bbc
+   Path: src/controllers/accounts/posts.js, line 200
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f2ce2e62-eb0a-46e2-929e-a6951e9f1033
+   Path: src/controllers/accounts/posts.js, line 204
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: d67cb703-ef12-4d89-9557-c86a4cda890a
+   Path: src/controllers/accounts/profile.js, line 21
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 2188cef7-ae9b-4d3f-8c12-e7587fd505f6
+   Path: src/controllers/accounts/sessions.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 8b05d57e-5625-437a-9705-0ae3afe353a9
+   Path: src/controllers/accounts/settings.js, line 20
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 6b40a68a-80f8-4fec-9723-561e0f04d8c2
+   Path: src/controllers/accounts/settings.js, line 129
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: dadeccbb-c52e-449c-9901-ffb6ef63457a
+   Path: src/controllers/accounts/tags.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 292dd0a6-b04d-4f54-9121-bd84539605fa
+   Path: src/controllers/accounts/uploads.js, line 14
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b760d4be-1918-48ea-bea6-e3724a30c809
+   Path: src/controllers/activitypub/topics.js, line 21
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9398533a-f936-418e-894c-7168ef867cdb
+   Path: src/controllers/admin/admins-mods.js, line 15
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 30c259d5-b6f8-4fee-94dd-9e91eea4df52
+   Path: src/controllers/admin/appearance.js, line 5
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f28a59dd-7c9b-47bc-941d-c0cbf705eaf8
+   Path: src/controllers/admin/appearance.js, line 9
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b9f9423c-ac2d-4de5-96c9-5bd8518b2c0a
+   Path: src/controllers/admin/appearance.js, line 13
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b38ffff2-d180-40c8-8b61-1f5ac3c1a9d2
+   Path: src/controllers/admin/cache.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b83466fb-858f-44e4-a07e-b92833649d8e
+   Path: src/controllers/admin/categories.js, line 20
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c6ce11c8-72ac-48d2-b551-3368642fdceb
+   Path: src/controllers/admin/categories.js, line 51
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 8ee078bc-f03c-425a-bddc-e8be78fd60bc
+   Path: src/controllers/admin/categories.js, line 147
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ee93c5ea-c7b5-4520-91c9-5864102796a4
+   Path: src/controllers/admin/categories.js, line 160
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 09299c00-64b3-435a-b56d-92d52cd4dfec
+   Path: src/controllers/admin/dashboard.js, line 21
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: d2b9d5ae-96ea-465e-86ff-7f409bfd0b48
+   Path: src/controllers/admin/dashboard.js, line 253
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 42177dd6-dfb7-4ecb-9ec6-ee002884bd62
+   Path: src/controllers/admin/dashboard.js, line 289
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 86139bc5-8387-4287-949d-a908444d5a3e
+   Path: src/controllers/admin/dashboard.js, line 316
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 1e0fc4cf-284b-4069-ae1f-bf0214def657
+   Path: src/controllers/admin/dashboard.js, line 343
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9ea666f6-a580-4aa7-be0e-64ad98dab0e8
+   Path: src/controllers/admin/database.js, line 7
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 5fa1fe24-f1c5-42c5-a326-b2eee5c5b488
+   Path: src/controllers/admin/digest.js, line 9
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 24bbc8ef-6b6c-4e56-9bd3-61a36da0991c
+   Path: src/controllers/admin/errors.js, line 11
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9370dfc1-99cd-4438-8c1e-f7b4bb2953c7
+   Path: src/controllers/admin/events.js, line 12
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 45397b32-26b2-43f2-859d-1affe23a2a7f
+   Path: src/controllers/admin/groups.js, line 15
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: bbd4dc9e-b399-4ab5-8867-ce8c83534d3d
+   Path: src/controllers/accounts/follow.js, line 13
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 45ad9f42-fbd9-41cb-9fa4-4fa1c694511f
+   Path: src/controllers/admin/hooks.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 11e9d445-7408-43c0-baaf-3f7a7d885042
+   Path: src/controllers/admin/logger.js, line 5
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 245714cb-e1da-4cbc-b5ba-670e3af6ab4c
+   Path: src/controllers/admin/logs.js, line 11
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 108448c4-67a6-426c-a65c-fb10b4e8b250
+   Path: src/controllers/admin/plugins.js, line 10
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ff3593af-7ff3-4689-84c4-88c618b72244
+   Path: src/controllers/admin/privileges.js, line 9
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 03da3d4f-3d70-4109-bbcd-3c22c9b8c1be
+   Path: src/controllers/admin/rewards.js, line 7
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: feb28a17-78c9-42c3-b736-2139aabdf5f7
+   Path: src/controllers/admin/settings.js, line 20
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 159ebc7e-bc32-4e7e-b4b3-670a712d5784
+   Path: src/controllers/admin/settings.js, line 37
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9376377f-8a37-49be-8941-2263f21f8366
+   Path: src/controllers/admin/settings.js, line 67
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 203fcb50-646a-4ddd-91be-dcfa20fbe186
+   Path: src/controllers/admin/settings.js, line 83
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 68416975-07c4-4340-a860-e5d0042e2af5
+   Path: src/controllers/admin/settings.js, line 89
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: a3c5a44d-b52e-4a45-974c-d7caf1b24789
+   Path: src/controllers/admin/settings.js, line 95
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c9cfaf9e-5b06-4213-9fca-41d9f1ac0f5a
+   Path: src/controllers/admin/settings.js, line 101
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c721951e-1c9a-4747-bc85-66ca48196c20
+   Path: src/controllers/admin/settings.js, line 109
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: fa6ee123-8d52-48ae-845a-44f3568393a2
+   Path: src/controllers/admin/settings.js, line 115
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b22ee68e-80a0-4fb8-8154-b937391d1bc3
+   Path: src/controllers/admin/settings.js, line 126
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 2d935805-9f2b-4513-b131-154e49f8634a
+   Path: src/controllers/admin/settings.js, line 132
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 2a5d2163-8573-4c6d-81e2-8aa52238c669
+   Path: src/controllers/admin/settings.js, line 138
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: cd978ea1-279e-4225-b0a4-e6d1eed86c11
+   Path: src/controllers/admin/settings.js, line 144
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 7462dcee-7707-4ad6-8280-d8b745c402a1
+   Path: src/controllers/admin/settings.js, line 161
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c0f64208-ef66-4536-87e1-69f59e8ec5d2
+   Path: src/controllers/admin/settings.js, line 176
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f1724717-298c-46e1-ae42-34a2412a2892
+   Path: src/controllers/admin/settings.js, line 182
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: bc76f987-8d64-4c5f-9d26-cadd01cdbf2c
+   Path: src/controllers/admin/settings.js, line 188
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 59b7c390-e4e9-4dc9-b409-ac8d1ba4d711
+   Path: src/controllers/admin/tags.js, line 7
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ba915bf7-485d-4616-a045-ee3cd405cd76
+   Path: src/controllers/admin/themes.js, line 13
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c357e4ee-a0f5-487a-96f0-c084ff88fe39
+   Path: src/controllers/admin/uploads.js, line 21
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ea3e36a2-b137-44fd-bfc5-74822630b89c
+   Path: src/controllers/admin/users.js, line 21
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: d8db2f50-76da-41fe-a2a2-22b0319b4723
+   Path: src/controllers/admin/users.js, line 29
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: fa89e6bf-513b-40d4-b5e1-a4d645885745
+   Path: src/controllers/admin/users.js, line 119
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9f0fcc87-bb3a-488a-a012-e0491030249f
+   Path: src/controllers/admin/users.js, line 209
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 3e67a1f0-bcdf-4c92-92b3-0f3eccaff012
+   Path: src/controllers/admin/users.js, line 255
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: bcec7d07-5c7c-42ac-8a55-503af6b9a849
+   Path: src/controllers/admin/users.js, line 305
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: b80d3c2b-558e-4c94-be19-4d343766cb71
+   Path: src/controllers/admin/widgets.js, line 6
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 5319cf6d-92fd-4534-9df9-d46769a7c8ff
+   Path: src/controllers/categories.js, line 14
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: fb492e7d-6bb2-4d44-83e6-27c87e483ced
+   Path: src/controllers/category.js, line 28
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: a9f23153-e3a3-4087-83b8-271c3e172229
+   Path: src/controllers/composer.js, line 11
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: eac1ded8-932f-4ef8-920e-31ec58c52fed
+   Path: src/controllers/globalmods.js, line 13
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ba975a83-5a5c-4ab1-973a-996b143b147f
+   Path: src/controllers/groups.js, line 17
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: bd293453-b89b-42fa-956c-d57d11045256
+   Path: src/controllers/groups.js, line 70
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 75403d8e-b81b-421d-b5bd-9c4c47444972
+   Path: src/controllers/accounts/follow.js, line 17
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 7a71a6e2-b362-4c69-8153-40493a59513e
+   Path: src/controllers/index.js, line 46
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f1392c86-1a0b-47f7-a8da-700539f36724
+   Path: src/controllers/index.js, line 98
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f3da8c3c-9ff6-4734-b633-66721dddf845
+   Path: src/controllers/index.js, line 146
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 8f97d3c3-568d-4a71-8a92-f01e3dff07ef
+   Path: src/controllers/index.js, line 195
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ead61525-d374-439a-af02-51dc88faf90c
+   Path: src/controllers/index.js, line 226
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 61925869-a78f-406b-8305-9388ea700251
+   Path: src/controllers/index.js, line 345
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c6aa2ecf-e91a-46af-834d-e56fd57990bf
+   Path: src/controllers/index.js, line 366
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 0a9a4b45-f607-4b51-a364-6ab69b162146
+   Path: src/controllers/mods.js, line 24
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: ad9988be-bc66-4834-9b6e-c48ea1ce6bc9
+   Path: src/controllers/mods.js, line 133
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 3d650683-e0d7-4397-b204-ac395df14c54
+   Path: src/controllers/mods.js, line 216
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 736c81f6-2fae-49c4-ad00-24a4d6bfc33e
+   Path: src/controllers/popular.js, line 12
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 6d3fbdd6-219c-4118-8065-bd9234cc4c7d
+   Path: src/controllers/recent.js, line 16
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: e5f962d6-4677-442d-930f-0c841cd94d91
+   Path: src/controllers/search.js, line 22
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f1dfd973-ebee-4989-a5ce-9d8a851fada1
+   Path: src/controllers/service-worker.js, line 11
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9dee25e3-8477-4d86-8c4e-f6f85b0ddb30
+   Path: src/controllers/tags.js, line 19
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 68bffc88-b4f5-41d9-859a-44b174e51ea5
+   Path: src/controllers/tags.js, line 88
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 2a64b01a-9394-490c-9610-d73ba4b9dc85
+   Path: src/controllers/top.js, line 12
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 38641b81-9a7c-43e2-b96b-ed5773c5530a
+   Path: src/controllers/topics.js, line 25
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 29d6a650-a704-4928-be5c-dc887cdc9db5
+   Path: src/controllers/unread.js, line 17
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: dbc0c72c-1cf6-4591-8ce8-0b08454c8efa
+   Path: src/controllers/users.js, line 39
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 31b5dab0-dc38-4743-b589-6d0075f26af4
+   Path: src/controllers/users.js, line 50
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 5b0fdd13-687f-4564-a69f-540ed47a2fe0
+   Path: src/controllers/users.js, line 103
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 65a4750b-b28b-4349-b781-e1158afb8cd0
+   Path: src/controllers/users.js, line 195
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 7558ce7c-556e-45e9-81bf-2bed561661b6
+   Path: src/middleware/index.js, line 147
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 42e06b40-c2e4-43b3-8dc0-0f12d881b087
+   Path: src/middleware/index.js, line 223
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 2ad6a8f7-1e4c-4857-bed9-dc818c117922
+   Path: src/middleware/maintenance.js, line 12
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9566ff96-e01a-459d-b532-d345983e9b63
+   Path: src/routes/debug.js, line 17
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 72dde473-9ba3-4204-9164-545e4622a061
+   Path: vendor/nodebb-theme-harmony-2.1.35/lib/controllers.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 17860546-a8b2-4207-98f4-bb47fee9138d
+   Path: vendor/nodebb-theme-harmony-2.1.35/lib/controllers.js, line 14
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 584e76c9-81fb-4c99-b060-18d578c7d260
+   Path: vendor/nodebb-theme-harmony-main/lib/controllers.js, line 8
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 257e37c1-42ff-4975-8c42-67fb9ecbf9d2
+   Path: vendor/nodebb-theme-harmony-main/lib/controllers.js, line 14
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: f2b5f951-ab8d-4da5-a45b-020de65d0bf1
+   Path: install/web.js, line 178
+   Info: Expensive operation (a system command execution) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits for Login Operations
+   Finding ID: 6f2fd689-50a4-4a5c-92ed-1f85c8025c6b
+   Path: src/controllers/authentication.js, line 280
+   Info: Call to passport.authenticate performs user authentication, but is not protected by any rate-limiting mechanism. This may enable the attackers to bruteforce users' passwords. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits for Login Operations
+   Finding ID: 79ddcf80-c6b1-44ca-8040-a7ea903007d9
+   Path: src/middleware/user.js, line 28
+   Info: Call to passport.authenticate performs user authentication, but is not protected by any rate-limiting mechanism. This may enable the attackers to bruteforce users' passwords. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits for Login Operations
+   Finding ID: b1a6af73-595d-4943-b703-bc04b013b3b4
+   Path: src/routes/authentication.js, line 106
+   Info: Call to passport.authenticate performs user authentication, but is not protected by any rate-limiting mechanism. This may enable the attackers to bruteforce users' passwords. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits for Login Operations
+   Finding ID: 8d9bdf8f-5b8e-4bae-a726-f574f289d515
+   Path: src/routes/authentication.js, line 124
+   Info: Call to passport.authenticate performs user authentication, but is not protected by any rate-limiting mechanism. This may enable the attackers to bruteforce users' passwords. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: eeda9e77-8342-4250-a4a5-7c95b67e0321
+   Path: public/src/ajaxify.js, line 176
+   Info: Unsanitized input from data from a remote resource flows into window.open, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: 1f9ba443-3863-44f1-ba31-095be6cb37e8
+   Path: public/src/modules/logout.js, line 20
+   Info: Unsanitized input from data from a remote resource flows into window.location, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: ebd43ff9-36fe-42dd-8966-210cc21a370a
+   Path: src/controllers/errors.js, line 22
+   Info: Unsanitized input from the request URL flows into redirect, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: 59742511-4532-431e-99c5-836452c6d9a5
+   Path: src/controllers/errors.js, line 24
+   Info: Unsanitized input from the request URL flows into redirect, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: d0f46ef5-0cd0-47e7-92b6-e3e029d817fb
+   Path: src/middleware/index.js, line 75
+   Info: Unsanitized input from the request URL flows into redirect, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Open Redirect
+   Finding ID: b5eb4cd8-bc4b-4d88-bf33-3e00e831b1ea
+   Path: src/middleware/user.js, line 265
+   Info: Unsanitized input from an HTTP parameter flows into redirect, where it is used as input for request redirection. This may result in an Open Redirect vulnerability.
+
+ ✗ [MEDIUM] Code Injection
+   Finding ID: ef0f978f-d62c-4df0-b10f-5ead32ed3397
+   Path: public/src/ajaxify.js, line 517
+   Info: Unsanitized input from data from a remote resource flows into Function, where it is executed as JavaScript code. This may result in a Code Injection vulnerability.
+
+ ✗ [MEDIUM] DOM-based Cross-site Scripting (XSS)
+   Finding ID: b2a8b77e-e01e-48ec-be29-5cf9d086a57f
+   Path: public/src/client/category/tools.js, line 299
+   Info: Unsanitized input from data from a remote resource flows into replaceWith, where it is used to dynamically construct the HTML page on client side. This may result in a DOM Based Cross-Site Scripting attack (DOMXSS).
+
+ ✗ [MEDIUM] Cleartext Transmission - HTTP Instead of HTTPS
+   Finding ID: b8f42465-6b3c-4584-851c-945fd9491c03
+   Path: src/webserver.js, line 47
+   Info: http.createServer uses HTTP which is an insecure protocol and should not be used in code due to cleartext transmission of information. Data in cleartext in a communication channel can be sniffed by unauthorized actors. Consider using the https module instead.
+
+ ✗ [MEDIUM] DOM-based Cross-site Scripting (XSS)
+   Finding ID: f6bbc1f2-b819-4d34-bb3c-e84db415cbe3
+   Path: public/src/client/chats.js, line 736
+   Info: Unsanitized input from data from a remote resource flows into html, where it is used to dynamically construct the HTML page on client side. This may result in a DOM Based Cross-Site Scripting attack (DOMXSS).
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 5298d732-4ca7-40a9-a887-2e27f6474ce9
+   Path: install/web.js, line 149
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 47dc9a1e-26f9-4f5b-b553-65c6b52612bd
+   Path: src/controllers/404.js, line 55
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: c9b5c463-035f-4aa7-8235-ce380c8ff3ab
+   Path: src/controllers/accounts/blocks.js, line 10
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 6576e414-7b0f-4588-b6f8-fd1df42efdbb
+   Path: src/controllers/accounts/categories.js, line 11
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 9c5e1e14-fc47-45d6-a684-4de10881a8b0
+   Path: src/controllers/accounts/chats.js, line 12
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 25f1dce4-167e-43b6-91ab-f2d19d450e4d
+   Path: src/controllers/accounts/consent.js, line 9
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Information Exposure - X-Powered-By Header
+   Finding ID: 3674c1e4-8ab0-4659-8c4a-e0d7f6bc5215
+   Path: install/web.js, line 22
+   Info: Disable X-Powered-By header for your Express app (consider using Helmet middleware), because it exposes information about the used framework to potential attackers.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 1b336548-fe36-4114-bed4-134bcb3ef075
+   Path: src/controllers/accounts/edit.js, line 14
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 89a6ae2d-4931-448b-acf1-e0b8babf3189
+   Path: src/controllers/accounts/edit.js, line 88
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: a9e59d6b-662b-4fed-8bd4-c2e60aed87d9
+   Path: src/controllers/accounts/edit.js, line 92
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Cross-site Scripting (XSS)
+   Finding ID: 9ec0d932-1ec9-469e-b0b3-ef2c95934bfa
+   Path: src/controllers/errors.js, line 116
+   Info: Unsanitized input from an exception flows into send, where it is used to render an HTML page returned to the user. This may result in a Cross-Site Scripting attack (XSS).
+
+ ✗ [MEDIUM] Cross-site Scripting (XSS)
+   Finding ID: b7ea8823-63b1-47d3-82d0-ce5382ea5933
+   Path: src/controllers/composer.js, line 95
+   Info: Unsanitized input from an exception flows into send, where it is used to render an HTML page returned to the user. This may result in a Cross-Site Scripting attack (XSS).
+
+ ✗ [MEDIUM] Cross-site Scripting (XSS)
+   Finding ID: a1f82673-cde3-4c3f-9b38-d5b787a0b949
+   Path: src/controllers/authentication.js, line 499
+   Info: Unsanitized input from an exception flows into send, where it is used to render an HTML page returned to the user. This may result in a Cross-Site Scripting attack (XSS).
+
+ ✗ [MEDIUM] Cross-site Scripting (XSS)
+   Finding ID: 909a71b6-72cd-492f-a8c9-c24131287d83
+   Path: src/controllers/authentication.js, line 124
+   Info: Unsanitized input from an exception flows into send, where it is used to render an HTML page returned to the user. This may result in a Cross-Site Scripting attack (XSS).
+
+ ✗ [MEDIUM] Allocation of Resources Without Limits or Throttling
+   Finding ID: 7f2b2a60-96a4-4673-a8f0-358b93037468
+   Path: src/controllers/accounts/edit.js, line 109
+   Info: Expensive operation (a file system operation) is performed by an endpoint handler which does not use a rate-limiting mechanism. It may enable the attackers to perform Denial-of-service attacks. Consider using a rate-limiting middleware such as express-limit.
+
+ ✗ [MEDIUM] Cross-Site Request Forgery (CSRF)
+   Finding ID: ca383b8f-cee8-43d9-afd0-15806f5a11d8
+   Path: src/webserver.js, line 11
+   Info: CSRF protection is disabled for your Express app. This allows the attackers to execute requests on a user's behalf.
+
+ ✗ [MEDIUM] Information Exposure - Server Error Message
+   Finding ID: 6b23f34f-0a61-424a-95b2-ebbb6ac08006
+   Path: src/controllers/authentication.js, line 283
+   Info: An error object flows to send and is leaked to the attacker. This may disclose important information about the application to an attacker.
+
+ ✗ [MEDIUM] Information Exposure - Server Error Message
+   Finding ID: c697d8c6-34b6-458d-bd16-5885e0eb1ce3
+   Path: src/controllers/helpers.js, line 26
+   Info: An error object flows to send and is leaked to the attacker. This may disclose important information about the application to an attacker.
+
+ ✗ [MEDIUM] Cross-Site Request Forgery (CSRF)
+   Finding ID: c665cd45-77f4-41b5-b302-c64d17b28a1b
+   Path: install/web.js, line 22
+   Info: CSRF protection is disabled for your Express app. This allows the attackers to execute requests on a user's behalf.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 58e15966-51c1-45b5-b26f-52622b9b1f6a
+   Path: src/controllers/admin/themes.js, line 19
+   Info: Unsanitized input from an HTTP parameter flows into readFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 2490b4c4-3afb-4f43-9ca8-b10c9ae37bdf
+   Path: src/controllers/admin/uploads.js, line 306
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: cdb5714a-0db9-4788-b084-63858ceb215a
+   Path: src/controllers/admin/uploads.js, line 192
+   Info: Unsanitized input from an uploaded file flows into readFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 741d98fe-736d-4bd3-bb6b-be00e627fc49
+   Path: src/controllers/uploads.js, line 202
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 4d26cddd-e30c-4fc6-8cb1-8020b57bb75e
+   Path: src/controllers/admin/uploads.js, line 214
+   Info: Unsanitized input from an uploaded file flows into copyFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 847fa9ad-de2e-4d84-9d63-93a2a715d58e
+   Path: src/controllers/admin/uploads.js, line 188
+   Info: Unsanitized input from an uploaded file flows into copyFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 949c13dd-1239-426d-bd9b-40e0027c866b
+   Path: src/controllers/admin/uploads.js, line 172
+   Info: Unsanitized input from an uploaded file flows into copyFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 1b8410a6-4680-454c-a5de-fc44a6f0de29
+   Path: src/controllers/admin/uploads.js, line 94
+   Info: Unsanitized input from an HTTP parameter flows into readdir, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to list arbitrary directories.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: e31fa303-9030-416d-a1fc-b7d610cbdffa
+   Path: src/controllers/admin/uploads.js, line 284
+   Info: Unsanitized input from an uploaded file flows into readFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 1ca50b49-75f1-4a98-9ef5-624330acc370
+   Path: src/controllers/admin/uploads.js, line 237
+   Info: Unsanitized input from an uploaded file flows into copyFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to overwrite arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 891524ce-159b-4cf2-b308-cec4d9084045
+   Path: src/controllers/admin/uploads.js, line 279
+   Info: Unsanitized input from an uploaded file flows into copyFile, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 57e740f8-2881-4c25-b880-b28a243ddfe3
+   Path: src/controllers/admin/uploads.js, line 268
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 2838dfc3-f108-4826-9191-b8af14b7067c
+   Path: src/controllers/admin/uploads.js, line 242
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 9c3267d6-0047-40e8-84e6-3a956c4526af
+   Path: src/controllers/admin/uploads.js, line 229
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 580c2c67-245e-48b3-abe6-b39a65d52054
+   Path: src/controllers/admin/uploads.js, line 219
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 1ffe2246-3c4e-402a-95da-43482bc6434b
+   Path: src/controllers/admin/uploads.js, line 203
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: a6992532-be16-4819-8cfa-ea507754453a
+   Path: src/controllers/admin/uploads.js, line 177
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: 739b59f7-e5e8-4ce8-8a3d-bfbd4a9632c9
+   Path: src/controllers/admin/uploads.js, line 157
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+ ✗ [HIGH] Path Traversal
+   Finding ID: adc73a29-7f91-4093-9af2-84f8276381fb
+   Path: src/controllers/accounts/edit.js, line 168
+   Info: Unsanitized input from an uploaded file flows into unlink, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to delete arbitrary files.
+
+
+
+╭───────────────────────────────────────────────────────────╮
+│ Test Summary                                              │
+│                                                           │
+│   Organization:      pdfour4                              │
+│   Test type:         Static code analysis                 │
+│   Project path:      /workspaces/nodebb-spring-26-yc26    │
+│                                                           │
+│   Total issues:   247                                     │
+│   Ignored issues: 0 [ 0 HIGH  0 MEDIUM  0 LOW ]           │
+│   Open issues:    247 [ 19 HIGH  149 MEDIUM  79 LOW ]     │
+╰───────────────────────────────────────────────────────────╯
+    
+💡 Tip
+
+   To view ignored issues, use the --include-ignores option.
+                                                            
+
