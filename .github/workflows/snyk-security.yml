@@ -1,0 +1,30 @@
+name: Snyk Security Scan
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Standard NodeBB LTS version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Snyk globally
+        run: npm install -g snyk
+
+      # We only fail the build for HIGH severity issues to avoid blocking development for low-risk testing files
+      - name: Run Snyk Code (SAST)
+        run: snyk code test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
