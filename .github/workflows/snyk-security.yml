@@ -7,6 +7,8 @@ on:
 jobs:
   security-analysis:
     runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     
     steps:
       - name: Checkout repository
@@ -22,7 +24,7 @@ jobs:
 
       # We only fail the build for HIGH severity issues to avoid blocking development for low-risk testing files
       - name: Run Snyk Code (SAST)
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+        if: ${{ env.SNYK_TOKEN != '' }}
         run: |
           set +e
           npx snyk code test --severity-threshold=high
@@ -40,9 +42,6 @@ jobs:
             echo "Snyk scan failed to run correctly (exit code: $snyk_exit_code)."
             exit "$snyk_exit_code"
           fi
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
       - name: Skip scan when SNYK_TOKEN is missing
-        if: ${{ secrets.SNYK_TOKEN == '' }}
+        if: ${{ env.SNYK_TOKEN == '' }}
         run: echo "SNYK_TOKEN is not set, skipping Snyk Code scan."
