@@ -15,8 +15,13 @@ translatorApi.translate = async function (postData) {
 	}
 
 	// 2. Otherwise, run the normal live code
-	const TRANSLATOR_API = `http://17313-team09.s3d.cmu.edu:5000`;
-	const response = await fetch(TRANSLATOR_API + '/?content=' + postData.content);
-	const data = await response.json();
-	return [data.is_english, data.translated_content];
+	try {
+		const TRANSLATOR_API = `http://17313-team09.s3d.cmu.edu:5000`;
+		const response = await fetch(`${TRANSLATOR_API}/?content=${encodeURIComponent(postData.content)}`);
+		const data = await response.json();
+		return [data.is_english, data.translated_content];
+	} catch (err) {
+		// If the translator service is unreachable, treat post as English so creation still succeeds
+		return [true, ''];
+	}
 };
