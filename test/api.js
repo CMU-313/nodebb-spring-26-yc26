@@ -184,6 +184,11 @@ describe('API', async () => {
 			return;
 		}
 
+		plugins.hooks.register('emailer-test', {
+			hook: 'static:email.send',
+			method: dummyEmailerHook,
+		});
+
 		// Create sample users
 		const adminUid = await user.create({ username: 'admin', password: '123456' });
 		const unprivUid = await user.create({ username: 'unpriv', password: '123456' });
@@ -310,11 +315,6 @@ describe('API', async () => {
 		plugins.hooks.register('core', {
 			hook: 'filter:search.query',
 			method: dummySearchHook,
-		});
-		// Attach an emailer hook so related requests do not error
-		plugins.hooks.register('emailer-test', {
-			hook: 'static:email.send',
-			method: dummyEmailerHook,
 		});
 
 		// All tests run as admin user
