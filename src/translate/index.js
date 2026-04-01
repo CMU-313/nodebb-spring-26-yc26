@@ -16,7 +16,7 @@ translatorApi.translate = async function (postData) {
 
 	// 2. Otherwise, run the normal live code
 	try {
-		const TRANSLATOR_API = `http://17313-team09.s3d.cmu.edu:5000`;
+		const TRANSLATOR_API = `http://128.2.220.232:8080`;
 		const response = await fetch(`${TRANSLATOR_API}/?content=${encodeURIComponent(postData.content)}`);
 		const data = await response.json();
 		return [data.is_english, data.translated_content];
